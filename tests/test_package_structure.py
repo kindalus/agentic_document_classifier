@@ -13,7 +13,7 @@ def test_main_package_import():
     import agentic_document_classifier
 
     assert hasattr(agentic_document_classifier, '__version__')
-    assert agentic_document_classifier.__version__ == "0.1.0"
+    assert agentic_document_classifier.__version__ == "0.1.2"
 
 
 def test_base_agent_import():
