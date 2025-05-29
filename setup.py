@@ -17,7 +17,7 @@ if requirements_path.exists():
 
 setup(
     name="agentic_document_classifier",
-    version="0.1.0",
+    version="0.1.1",
     author="Agentic Document Classifier Team",
     description="Intelligent document classification system using AI agents based on Google Gemini",
     long_description=long_description,
