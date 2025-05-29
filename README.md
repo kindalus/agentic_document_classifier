@@ -51,9 +51,16 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 - Python 3.8+
 - Conta Google AI Studio com API key
 
-### Dependências
+### Instalação via pip
 ```bash
-pip install -r requirements.txt
+pip install agentic-document-classifier
+```
+
+### Instalação para desenvolvimento
+```bash
+git clone https://github.com/yourusername/agentic-document-classifier.git
+cd agentic-document-classifier
+pip install -e ".[dev]"
 ```
 
 ### Configuração da API
@@ -64,37 +71,32 @@ export GOOGLE_AI_API_KEY="sua_chave_aqui"
 
 ## 📖 Uso
 
-### Classificação de Documentos Únicos
+### Interface de Linha de Comando
 
 #### Triagem Inicial
 ```bash
-python triage_agent.py documento.pdf
+agentic-triage documento.pdf
 ```
 
-#### Classificação Específica por Categoria
+#### Processamento em Lote
 ```bash
-# Para documentos comerciais
-echo '{"grupo_documento": "DOCUMENTOS_COMERCIAIS", ...}' | python invoice_classifier_agent.py
-
-# Para documentos aduaneiros
-echo '{"grupo_documento": "DOCUMENTOS_ADUANEIROS", ...}' | python customs_classifier_agent.py
-
-# Para documentos de frete
-echo '{"grupo_documento": "DOCUMENTOS_FRETE", ...}' | python freight_classifier_agent.py
-
-# Para documentos fiscais
-echo '{"grupo_documento": "DOCUMENTOS_FISCAIS", ...}' | python taxes_classifier_agent.py
-
-# Para documentos bancários
-echo '{"grupo_documento": "DOCUMENTOS_BANCARIOS", ...}' | python banking_classifier_agent.py
-
-# Para documentos de RH
-echo '{"grupo_documento": "DOCUMENTOS_RH", ...}' | python hr_classifier_agent.py
+agentic-classify documento1.pdf documento2.pdf documento3.pdf
 ```
 
-### Processamento em Lote
-```bash
-python classify_documents.py documento1.pdf documento2.pdf documento3.pdf
+### Uso Programático
+
+```python
+from agentic_document_classifier.agents.triage_agent import TriageAgent
+from agentic_document_classifier.agents.specialized import InvoiceClassifierAgent
+
+# Triagem inicial
+triage_agent = TriageAgent()
+result = triage_agent.run("documento.pdf")
+
+# Classificação especializada
+if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
+    invoice_agent = InvoiceClassifierAgent()
+    detailed_result = invoice_agent.run(result)
 ```
 
 ## 📊 Estrutura de Output
@@ -140,11 +142,33 @@ python classify_documents.py documento1.pdf documento2.pdf documento3.pdf
 
 ## 🏗️ Arquitectura
 
+### Estrutura do Pacote
+
+```
+agentic_document_classifier/
+├── src/agentic_document_classifier/
+│   ├── agents/
+│   │   ├── base_agent.py           # Classe base para agentes
+│   │   ├── triage_agent.py         # Agente de triagem inicial
+│   │   └── specialized/            # Agentes especializados
+│   │       ├── banking_classifier_agent.py
+│   │       ├── customs_classifier_agent.py
+│   │       ├── freight_classifier_agent.py
+│   │       ├── hr_classifier_agent.py
+│   │       ├── invoice_classifier_agent.py
+│   │       └── taxes_classifier_agent.py
+│   ├── prompts/                    # Templates de prompts
+│   └── cli/                        # Ferramentas de linha de comando
+├── tests/                          # Testes automatizados
+├── docs/                           # Documentação
+└── examples/                       # Exemplos de uso
+```
+
 ### Componentes Principais
 
-- **`base_agent.py`**: Classe base para todos os agentes de classificação
-- **`triage_agent.py`**: Agente responsável pela triagem inicial dos documentos
-- **`classify_documents.py`**: Script principal para processamento em lote
+- **`BaseAgent`**: Classe base para todos os agentes de classificação
+- **`TriageAgent`**: Agente responsável pela triagem inicial dos documentos
+- **`CLI Tools`**: Ferramentas de linha de comando para processamento em lote
 - **Agentes Especializados**: Um agente para cada categoria de documento
 
 ### Fluxo de Processamento
@@ -156,7 +180,7 @@ python classify_documents.py documento1.pdf documento2.pdf documento3.pdf
 
 ### Prompts Especializados
 
-Cada agente utiliza prompts específicos em português europeu:
+Cada agente utiliza prompts específicos em português europeu, organizados no pacote `prompts`:
 - `triage_prompt.md`: Instruções para triagem inicial
 - `invoice_classifier_prompt.md`: Classificação de documentos comerciais
 - `customs_classifier_prompt.md`: Classificação de documentos aduaneiros
@@ -185,13 +209,18 @@ Para personalizar o comportamento dos agentes:
 ```
 agentic_document_classifier/
 ├── README.md
-├── requirements.txt
-├── classify_documents.py          # Script principal
-├── base_agent.py                  # Classe base dos agentes
-├── triage_agent.py               # Agente de triagem
-├── *_classifier_agent.py         # Agentes especializados
-├── *_prompt.md                   # Prompts para cada agente
-└── resources/                    # Recursos e dados de teste
+├── LICENSE
+├── pyproject.toml                # Configuração moderna do pacote
+├── setup.py                      # Setup tradicional (compatibilidade)
+├── requirements.txt              # Dependências de produção
+├── requirements-dev.txt          # Dependências de desenvolvimento
+├── MANIFEST.in                   # Arquivos incluídos na distribuição
+├── CHANGELOG.md                  # Histórico de mudanças
+├── src/agentic_document_classifier/  # Código fonte do pacote
+├── tests/                        # Testes automatizados
+├── docs/                         # Documentação
+├── examples/                     # Exemplos de uso
+└── .github/workflows/            # CI/CD GitHub Actions
 ```
 
 ### Extensão do Sistema
@@ -204,16 +233,40 @@ Para adicionar uma nova categoria de documento:
 
 ## 📝 Licença
 
-[Especificar a licença do projeto]
+Este projeto está licenciado sob a Licença Apache 2.0 - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ## 🤝 Contribuição
 
 Contribuições são bem-vindas! Para contribuir:
+
+### Configuração para Desenvolvimento
+```bash
+git clone https://github.com/yourusername/agentic-document-classifier.git
+cd agentic-document-classifier
+pip install -e ".[dev]"
+pre-commit install
+```
+
+### Processo de Contribuição
 1. Faça fork do repositório
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Abra um Pull Request
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. Faça commit das suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. Execute os testes (`pytest`)
+5. Execute as verificações de qualidade (`black src tests && isort src tests && flake8 src`)
+6. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
+7. Abra um Pull Request
+
+### Padrões de Código
+- Usamos `black` para formatação de código
+- `isort` para organização de imports
+- `flake8` para verificação de estilo
+- `mypy` para verificação de tipos
+- `pytest` para testes
 
 ## 📞 Suporte
 
-Para questões ou suporte, entre em contacto através de [informações de contacto].
+Para questões ou suporte:
+- 🐛 **Bugs**: [Criar issue](https://github.com/yourusername/agentic-document-classifier/issues)
+- 💡 **Feature Requests**: [Discussões](https://github.com/yourusername/agentic-document-classifier/discussions)
+- 📖 **Documentação**: [Wiki](https://github.com/yourusername/agentic-document-classifier/wiki)
+- 💬 **Chat**: [Discord/Slack community link]
