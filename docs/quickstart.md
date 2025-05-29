@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ## Setup
@@ -19,16 +19,19 @@ export GOOGLE_AI_API_KEY="your_api_key_here"
 ### Command Line
 
 Classify a single document:
+
 ```bash
 agentic-triage document.pdf
 ```
 
 Classify multiple documents:
+
 ```bash
 agentic-classify *.pdf
 ```
 
 With custom settings:
+
 ```bash
 agentic-classify --processes 8 --output results.json documents/*.pdf
 ```
@@ -54,22 +57,22 @@ print(f"Issue date: {triage_result.data_emissao}")
 if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
     invoice_agent = InvoiceClassifierAgent()
     detailed_result = invoice_agent.run(triage_result.model_dump_json())
-    
+
     print(f"Document type: {detailed_result.tipo_documento}")
     print(f"Total amount: {detailed_result.metadados_documento.total}")
 ```
 
 ## Document Categories
 
-| Category | Description | Examples |
-|----------|-------------|----------|
-| `DOCUMENTOS_COMERCIAIS` | Commercial documents | Invoices, receipts, credit notes |
-| `DOCUMENTOS_ADUANEIROS` | Customs documents | Customs declarations, clearance notes |
-| `DOCUMENTOS_FRETE` | Freight documents | Bills of lading, air waybills |
-| `DOCUMENTOS_FISCAIS` | Tax documents | Tax liquidation notes, INSS guides |
-| `DOCUMENTOS_BANCARIOS` | Banking documents | Bank statements, transfer receipts |
-| `DOCUMENTOS_RH` | HR documents | Payroll sheets, personnel docs |
-| `OUTROS_DOCUMENTOS` | Other documents | Unclassified documents |
+| Category                | Description          | Examples                              |
+| ----------------------- | -------------------- | ------------------------------------- |
+| `DOCUMENTOS_COMERCIAIS` | Commercial documents | Invoices, receipts, credit notes      |
+| `DOCUMENTOS_ADUANEIROS` | Customs documents    | Customs declarations, clearance notes |
+| `DOCUMENTOS_FRETE`      | Freight documents    | Bills of lading, air waybills         |
+| `DOCUMENTOS_FISCAIS`    | Tax documents        | Tax liquidation notes, INSS guides    |
+| `DOCUMENTOS_BANCARIOS`  | Banking documents    | Bank statements, transfer receipts    |
+| `DOCUMENTOS_RH`         | HR documents         | Payroll sheets, personnel docs        |
+| `OUTROS_DOCUMENTOS`     | Other documents      | Unclassified documents                |
 
 ## Example Output
 
@@ -87,7 +90,7 @@ if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
     "nome_emitente": "Empresa ABC Lda",
     "nif_cliente": "987654321",
     "nome_cliente": "Cliente XYZ",
-    "total": 114000.00,
+    "total": 114000.0,
     "moeda": "AOA"
   }
 }
@@ -147,21 +150,27 @@ triage_prompt = load_prompt("triage_prompt")
 ## Common Issues
 
 **API Key Error**:
+
 ```
 Error: GOOGLE_AI_API_KEY environment variable not set
 ```
+
 Solution: Set your API key as shown in setup
 
 **File Not Found**:
+
 ```
 Error: File 'document.pdf' not found
 ```
+
 Solution: Check file path and permissions
 
 **Processing Error**:
+
 ```
 Error processing prompt
 ```
+
 Solution: Verify PDF is valid and not corrupted
 
 ## Next Steps

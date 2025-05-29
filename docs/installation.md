@@ -15,7 +15,7 @@ Before installing the Agentic Document Classifier, ensure you have the following
 Once published to PyPI, you can install the package using pip:
 
 ```bash
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ### 2. Install from Source
@@ -23,8 +23,8 @@ pip install agentic-document-classifier
 #### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/agentic-document-classifier.git
-cd agentic-document-classifier
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
 ```
 
 #### Install in Development Mode
@@ -60,7 +60,7 @@ pip install -e ".[test]"
 You can install directly from GitHub without cloning:
 
 ```bash
-pip install git+https://github.com/yourusername/agentic-document-classifier.git
+pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
 ## Environment Setup
@@ -70,16 +70,19 @@ pip install git+https://github.com/yourusername/agentic-document-classifier.git
 Set your Google AI API key as an environment variable:
 
 #### Linux/macOS
+
 ```bash
 export GOOGLE_AI_API_KEY="your_api_key_here"
 ```
 
 #### Windows (Command Prompt)
+
 ```cmd
 set GOOGLE_AI_API_KEY=your_api_key_here
 ```
 
 #### Windows (PowerShell)
+
 ```powershell
 $env:GOOGLE_AI_API_KEY="your_api_key_here"
 ```
@@ -142,8 +145,8 @@ CMD ["agentic-classify", "--help"]
 Build and run:
 
 ```bash
-docker build -t agentic-document-classifier .
-docker run -e GOOGLE_AI_API_KEY="your_api_key" agentic-document-classifier
+docker build -t agentic_document_classifier .
+docker run -e GOOGLE_AI_API_KEY="your_api_key" agentic_document_classifier
 ```
 
 ### Using Docker Compose
@@ -151,7 +154,7 @@ docker run -e GOOGLE_AI_API_KEY="your_api_key" agentic-document-classifier
 Create a `docker-compose.yml`:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   classifier:
@@ -179,7 +182,7 @@ source agentic-env/bin/activate  # Linux/macOS
 # or
 agentic-env\Scripts\activate  # Windows
 
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ### Using conda
@@ -187,13 +190,13 @@ pip install agentic-document-classifier
 ```bash
 conda create -n agentic-env python=3.11
 conda activate agentic-env
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ### Using pipenv
 
 ```bash
-pipenv install agentic-document-classifier
+pipenv install agentic_document_classifier
 pipenv shell
 ```
 
@@ -204,8 +207,8 @@ For contributors and developers:
 ### 1. Clone and Setup
 
 ```bash
-git clone https://github.com/yourusername/agentic-document-classifier.git
-cd agentic-document-classifier
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
 
 # Create virtual environment
 python -m venv dev-env
@@ -263,8 +266,8 @@ sphinx-build -b html . _build
 
 If you encounter issues:
 
-1. Check the [FAQ](https://github.com/yourusername/agentic-document-classifier#faq)
-2. Search existing [issues](https://github.com/yourusername/agentic-document-classifier/issues)
+1. Check the [FAQ](https://github.com/kindalus/agentic_document_classifier#faq)
+2. Search existing [issues](https://github.com/kindalus/agentic_document_classifier/issues)
 3. Create a new issue with:
    - Your Python version (`python --version`)
    - Your operating system

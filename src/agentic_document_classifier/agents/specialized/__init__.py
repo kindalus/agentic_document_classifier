@@ -7,15 +7,15 @@ business document categories.
 from .banking_classifier_agent import BankingClassifierAgent
 from .customs_classifier_agent import CustomsClassifierAgent
 from .freight_classifier_agent import FreightClassifierAgent
-from .hr_classifier_agent import HRClassifierAgent
+from .hr_classifier_agent import HrClassifierAgent
 from .invoice_classifier_agent import InvoiceClassifierAgent
 from .taxes_classifier_agent import TaxesClassifierAgent
 
 __all__ = [
     "BankingClassifierAgent",
-    "CustomsClassifierAgent", 
+    "CustomsClassifierAgent",
     "FreightClassifierAgent",
-    "HRClassifierAgent",
+    "HrClassifierAgent",
     "InvoiceClassifierAgent",
     "TaxesClassifierAgent",
 ]

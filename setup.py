@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Setup script for agentic-document-classifier package."""
+"""Setup script for agentic_document_classifier package."""
 
 from setuptools import setup, find_packages
 from pathlib import Path
@@ -16,18 +16,18 @@ if requirements_path.exists():
     requirements = [req.strip() for req in requirements if req.strip() and not req.startswith('#')]
 
 setup(
-    name="agentic-document-classifier",
+    name="agentic_document_classifier",
     version="0.1.0",
     author="Agentic Document Classifier Team",
     description="Intelligent document classification system using AI agents based on Google Gemini",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/agentic-document-classifier",
+    url="https://github.com/kindalus/agentic_document_classifier",
     project_urls={
-        "Bug Tracker": "https://github.com/yourusername/agentic-document-classifier/issues",
-        "Documentation": "https://github.com/yourusername/agentic-document-classifier#readme",
-        "Source Code": "https://github.com/yourusername/agentic-document-classifier",
-        "Changelog": "https://github.com/yourusername/agentic-document-classifier/blob/main/CHANGELOG.md",
+        "Bug Tracker": "https://github.com/kindalus/agentic_document_classifier/issues",
+        "Documentation": "https://github.com/kindalus/agentic_document_classifier#readme",
+        "Source Code": "https://github.com/kindalus/agentic_document_classifier",
+        "Changelog": "https://github.com/kindalus/agentic_document_classifier/blob/main/CHANGELOG.md",
     },
     packages=find_packages(where="src"),
     package_dir={"": "src"},
@@ -83,7 +83,7 @@ setup(
     },
     keywords=[
         "document-classification",
-        "ai-agents", 
+        "ai-agents",
         "gemini",
         "pdf-processing",
         "document-intelligence",

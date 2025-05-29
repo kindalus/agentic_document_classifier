@@ -66,27 +66,31 @@ agentic_document_classifier/
 ### Core Package (`src/agentic_document_classifier/`)
 
 #### Main Package (`__init__.py`)
+
 - Package version and metadata
 - Main imports for public API
 - Package-level documentation
 
 #### Agents Package (`agents/`)
+
 - **Base Agent**: Foundation class for all classification agents
 - **Triage Agent**: Initial document categorization
 - **Specialized Agents**: Category-specific classifiers
   - Banking documents
-  - Customs documents  
+  - Customs documents
   - Freight documents
   - HR documents
   - Invoice/commercial documents
   - Tax documents
 
 #### Prompts Package (`prompts/`)
+
 - AI prompt templates in Markdown format
 - Prompt loading utilities
 - Language-specific prompts (Portuguese European)
 
 #### CLI Package (`cli/`)
+
 - Command-line interface tools
 - Batch processing capabilities
 - User-friendly argument parsing
@@ -94,21 +98,25 @@ agentic_document_classifier/
 ### Configuration Files
 
 #### Modern Python Packaging (`pyproject.toml`)
+
 - Build system configuration
 - Project metadata and dependencies
 - Tool configurations (black, isort, mypy, pytest)
 - Entry points for CLI commands
 
 #### Legacy Support (`setup.py`)
+
 - Backward compatibility
 - Alternative installation method
 - Package data inclusion
 
 #### Dependencies
+
 - **Production** (`requirements.txt`): Core runtime dependencies
 - **Development** (`requirements-dev.txt`): Testing, linting, docs
 
 #### Distribution (`MANIFEST.in`)
+
 - Specifies non-Python files to include
 - Prompt templates
 - Documentation files
@@ -117,6 +125,7 @@ agentic_document_classifier/
 ### Development Tools
 
 #### Code Quality
+
 - **Pre-commit hooks**: Automated code quality checks
 - **Black**: Code formatting
 - **isort**: Import sorting
@@ -124,17 +133,20 @@ agentic_document_classifier/
 - **mypy**: Type checking
 
 #### Testing (`tests/`)
+
 - Unit tests for core functionality
 - Integration tests for complete workflows
 - Package structure validation tests
 
 #### CI/CD (`.github/workflows/`)
+
 - Automated testing across Python versions
 - Code quality verification
 - Security scanning
 - Package building and validation
 
 ### Documentation (`docs/`)
+
 - Installation guides
 - Quick start tutorials
 - API documentation
@@ -143,14 +155,16 @@ agentic_document_classifier/
 ## Installation Methods
 
 ### End Users
+
 ```bash
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ### Developers
+
 ```bash
-git clone https://github.com/yourusername/agentic-document-classifier.git
-cd agentic-document-classifier
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
 pip install -e ".[dev]"
 ```
 
@@ -164,6 +178,7 @@ After installation, the following commands are available:
 ## Import Structure
 
 ### Public API
+
 ```python
 from agentic_document_classifier import BaseAgent, TriageAgent
 from agentic_document_classifier.agents.specialized import InvoiceClassifierAgent
@@ -171,6 +186,7 @@ from agentic_document_classifier.prompts import load_prompt
 ```
 
 ### Internal Structure
+
 ```python
 from agentic_document_classifier.agents.base_agent import BaseAgent, ErrorOutput
 from agentic_document_classifier.agents.triage_agent import TriageAgent, DocumentGroup
@@ -180,6 +196,7 @@ from agentic_document_classifier.cli.classify_documents import classify_document
 ## Package Features
 
 ### Developer Experience
+
 - Modern Python packaging standards
 - Type hints and validation
 - Comprehensive test suite
@@ -187,6 +204,7 @@ from agentic_document_classifier.cli.classify_documents import classify_document
 - Pre-commit hooks for code quality
 
 ### Production Ready
+
 - Structured logging
 - Error handling and validation
 - Performance optimization (multiprocessing)
@@ -194,6 +212,7 @@ from agentic_document_classifier.cli.classify_documents import classify_document
 - Monitoring and diagnostics
 
 ### Extensibility
+
 - Plugin architecture for new document types
 - Configurable prompts and models
 - Modular agent design
@@ -204,6 +223,7 @@ from agentic_document_classifier.cli.classify_documents import classify_document
 The package has been migrated from a flat file structure to a proper Python package:
 
 ### Before
+
 ```
 agentic_document_classifier/
 ├── base_agent.py
@@ -214,6 +234,7 @@ agentic_document_classifier/
 ```
 
 ### After
+
 ```
 agentic_document_classifier/
 ├── src/agentic_document_classifier/
@@ -226,12 +247,14 @@ agentic_document_classifier/
 ```
 
 ### Breaking Changes
+
 - Import paths have changed (now uses package structure)
 - CLI scripts are now entry points
 - Prompt loading uses new utility functions
 - Configuration uses modern Python standards
 
 ### Compatibility
+
 - Maintained public API where possible
 - Provided migration examples
 - Clear upgrade documentation

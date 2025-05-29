@@ -13,58 +13,70 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 ## 📋 Categorias de Documentos Suportadas
 
 ### 1. Documentos Comerciais (`DOCUMENTOS_COMERCIAIS`)
+
 - Facturas, Facturas-Recibo, Facturas Pró-Forma
 - Notas de Crédito e Débito
 - Recibos
 
 ### 2. Documentos Aduaneiros (`DOCUMENTOS_ADUANEIROS`)
+
 - Documento Único Provisório
 - Declaração Aduaneira (ASYCUDAWorld)
 - Notas de Liquidação e Desalfandegamento
 
 ### 3. Documentos de Frete (`DOCUMENTOS_FRETE`)
+
 - Conhecimento de Embarque (Bill of Lading)
 - Carta de Porte (Air Waybill)
 - Certificado de Embarque (ARCCLA)
 - Packing Lists
 
 ### 4. Documentos Fiscais (`DOCUMENTOS_FISCAIS`)
+
 - Notas de Liquidação (AGT)
 - Guias de Pagamento INSS
 - Mapas de Retenções e Impostos
 
 ### 5. Documentos Bancários (`DOCUMENTOS_BANCARIOS`)
+
 - Extractos Bancários
 - Comprovativos de Transferência
 - Facturas de Comissões Bancárias
 
 ### 6. Documentos de Recursos Humanos (`DOCUMENTOS_RH`)
+
 - Folhas de Remuneração INSS
 - Documentos de gestão de pessoal
 
 ### 7. Outros Documentos (`OUTROS_DOCUMENTOS`)
+
 - Documentos que não se enquadram nas categorias acima
 
 ## 🛠️ Instalação
 
 ### Pré-requisitos
+
 - Python 3.8+
 - Conta Google AI Studio com API key
 
 ### Instalação via pip
+
 ```bash
-pip install agentic-document-classifier
+pip install agentic_document_classifier
 ```
 
 ### Instalação para desenvolvimento
+
 ```bash
-git clone https://github.com/yourusername/agentic-document-classifier.git
-cd agentic-document-classifier
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
 pip install -e ".[dev]"
 ```
 
 ### Configuração da API
+
 Configure a variável de ambiente com sua chave da API do Google AI:
+
 ```bash
 export GOOGLE_AI_API_KEY="sua_chave_aqui"
 ```
@@ -74,11 +86,13 @@ export GOOGLE_AI_API_KEY="sua_chave_aqui"
 ### Interface de Linha de Comando
 
 #### Triagem Inicial
+
 ```bash
 agentic-triage documento.pdf
 ```
 
 #### Processamento em Lote
+
 ```bash
 agentic-classify documento1.pdf documento2.pdf documento3.pdf
 ```
@@ -102,6 +116,7 @@ if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
 ## 📊 Estrutura de Output
 
 ### Triagem Inicial
+
 ```json
 {
   "localizacao_ficheiro": "/caminho/para/documento.pdf",
@@ -115,6 +130,7 @@ if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
 ```
 
 ### Classificação Detalhada (Exemplo: Documentos Comerciais)
+
 ```json
 {
   "localizacao_ficheiro": "/caminho/para/documento.pdf",
@@ -132,9 +148,9 @@ if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
     "nome_cliente": "Cliente XYZ",
     "meio_pagamento": "Transferência Bancária",
     "moeda": "AOA",
-    "total_sem_iva": 100000.00,
-    "iva": 14000.00,
-    "total": 114000.00,
+    "total_sem_iva": 100000.0,
+    "iva": 14000.0,
+    "total": 114000.0,
     "observacoes": "Pagamento a 30 dias"
   }
 }
@@ -181,6 +197,7 @@ agentic_document_classifier/
 ### Prompts Especializados
 
 Cada agente utiliza prompts específicos em português europeu, organizados no pacote `prompts`:
+
 - `triage_prompt.md`: Instruções para triagem inicial
 - `invoice_classifier_prompt.md`: Classificação de documentos comerciais
 - `customs_classifier_prompt.md`: Classificação de documentos aduaneiros
@@ -192,13 +209,16 @@ Cada agente utiliza prompts específicos em português europeu, organizados no p
 ## ⚙️ Configuração
 
 ### Parâmetros de Processamento
+
 - **Modelo AI**: `gemini-2.5-flash-preview-05-20` (configurável)
 - **Processos Paralelos**: 8 (configurável no `classify_documents.py`)
 - **Formato de Input**: PDF apenas
 - **Formato de Output**: JSON estruturado
 
 ### Personalização
+
 Para personalizar o comportamento dos agentes:
+
 1. Modifique os prompts em arquivos `.md` correspondentes
 2. Ajuste os schemas Pydantic nos arquivos dos agentes
 3. Configure o número de processos paralelos conforme necessário
@@ -206,6 +226,7 @@ Para personalizar o comportamento dos agentes:
 ## 🔧 Desenvolvimento
 
 ### Estrutura do Projeto
+
 ```
 agentic_document_classifier/
 ├── README.md
@@ -224,7 +245,9 @@ agentic_document_classifier/
 ```
 
 ### Extensão do Sistema
+
 Para adicionar uma nova categoria de documento:
+
 1. Crie um novo agente herdando de `BaseAgent`
 2. Defina o schema Pydantic para os metadados específicos
 3. Crie um prompt especializado em arquivo `.md`
@@ -240,14 +263,16 @@ Este projeto está licenciado sob a Licença Apache 2.0 - veja o arquivo [LICENS
 Contribuições são bem-vindas! Para contribuir:
 
 ### Configuração para Desenvolvimento
+
 ```bash
-git clone https://github.com/yourusername/agentic-document-classifier.git
-cd agentic-document-classifier
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
 pip install -e ".[dev]"
 pre-commit install
 ```
 
 ### Processo de Contribuição
+
 1. Faça fork do repositório
 2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
 3. Faça commit das suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
@@ -257,6 +282,7 @@ pre-commit install
 7. Abra um Pull Request
 
 ### Padrões de Código
+
 - Usamos `black` para formatação de código
 - `isort` para organização de imports
 - `flake8` para verificação de estilo
@@ -266,7 +292,8 @@ pre-commit install
 ## 📞 Suporte
 
 Para questões ou suporte:
-- 🐛 **Bugs**: [Criar issue](https://github.com/yourusername/agentic-document-classifier/issues)
-- 💡 **Feature Requests**: [Discussões](https://github.com/yourusername/agentic-document-classifier/discussions)
-- 📖 **Documentação**: [Wiki](https://github.com/yourusername/agentic-document-classifier/wiki)
+
+- 🐛 **Bugs**: [Criar issue](https://github.com/kindalus/agentic_document_classifier/issues)
+- 💡 **Feature Requests**: [Discussões](https://github.com/kindalus/agentic_document_classifier/discussions)
+- 📖 **Documentação**: [Wiki](https://github.com/kindalus/agentic_document_classifier/wiki)
 - 💬 **Chat**: [Discord/Slack community link]

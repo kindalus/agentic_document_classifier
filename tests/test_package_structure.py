@@ -38,7 +38,7 @@ def test_specialized_agents_import():
         BankingClassifierAgent,
         CustomsClassifierAgent,
         FreightClassifierAgent,
-        HRClassifierAgent,
+        HrClassifierAgent,
         InvoiceClassifierAgent,
         TaxesClassifierAgent,
     )
@@ -47,7 +47,7 @@ def test_specialized_agents_import():
         BankingClassifierAgent,
         CustomsClassifierAgent,
         FreightClassifierAgent,
-        HRClassifierAgent,
+        HrClassifierAgent,
         InvoiceClassifierAgent,
         TaxesClassifierAgent,
     ]

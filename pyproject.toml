@@ -3,25 +3,21 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentic-document-classifier"
+name = "agentic_document_classifier"
 version = "0.1.0"
 description = "Intelligent document classification system using AI agents based on Google Gemini"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "Apache-2.0"}
-authors = [
-    {name = "Agentic Document Classifier Team"}
-]
-maintainers = [
-    {name = "Agentic Document Classifier Team"}
-]
+license = { text = "Apache-2.0" }
+authors = [{ name = "Agentic Document Classifier Team" }]
+maintainers = [{ name = "Agentic Document Classifier Team" }]
 keywords = [
     "document-classification",
     "ai-agents",
     "gemini",
     "pdf-processing",
     "document-intelligence",
-    "business-documents"
+    "business-documents",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -38,14 +34,14 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Office/Business",
     "Topic :: Text Processing",
-    "Topic :: Utilities"
+    "Topic :: Utilities",
 ]
 dependencies = [
     "google-genai>=0.3.0",
     "pydantic>=2.0.0",
     "PyPDF2>=3.0.0",
     "click>=8.0.0",
-    "rich>=13.0.0"
+    "rich>=13.0.0",
 ]
 
 [project.optional-dependencies]
@@ -56,32 +52,24 @@ dev = [
     "isort>=5.12.0",
     "flake8>=6.0.0",
     "mypy>=1.0.0",
-    "pre-commit>=3.0.0"
+    "pre-commit>=3.0.0",
 ]
-docs = [
-    "sphinx>=6.0.0",
-    "sphinx-rtd-theme>=1.2.0",
-    "myst-parser>=1.0.0"
-]
-test = [
-    "pytest>=7.0.0",
-    "pytest-cov>=4.0.0",
-    "pytest-mock>=3.10.0"
-]
+docs = ["sphinx>=6.0.0", "sphinx-rtd-theme>=1.2.0", "myst-parser>=1.0.0"]
+test = ["pytest>=7.0.0", "pytest-cov>=4.0.0", "pytest-mock>=3.10.0"]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/agentic-document-classifier"
-Documentation = "https://github.com/yourusername/agentic-document-classifier#readme"
-Repository = "https://github.com/yourusername/agentic-document-classifier.git"
-"Bug Tracker" = "https://github.com/yourusername/agentic-document-classifier/issues"
-Changelog = "https://github.com/yourusername/agentic-document-classifier/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/kindalus/agentic_document_classifier"
+Documentation = "https://github.com/kindalus/agentic_document_classifier#readme"
+Repository = "https://github.com/kindalus/agentic_document_classifier.git"
+"Bug Tracker" = "https://github.com/kindalus/agentic_document_classifier/issues"
+Changelog = "https://github.com/kindalus/agentic_document_classifier/blob/main/CHANGELOG.md"
 
 [project.scripts]
 agentic-classify = "agentic_document_classifier.cli.classify_documents:main"
 agentic-triage = "agentic_document_classifier.agents.triage_agent:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -130,9 +118,7 @@ warn_unreachable = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = [
-    "google.genai.*",
-]
+module = ["google.genai.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
@@ -145,16 +131,12 @@ python_functions = ["test_*"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests"
+    "unit: marks tests as unit tests",
 ]
 
 [tool.coverage.run]
 source = ["src"]
-omit = [
-    "*/tests/*",
-    "*/test_*",
-    "*/__pycache__/*"
-]
+omit = ["*/tests/*", "*/test_*", "*/__pycache__/*"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -165,5 +147,5 @@ exclude_lines = [
     "raise AssertionError",
     "raise NotImplementedError",
     "if 0:",
-    "if __name__ == .__main__.:"
+    "if __name__ == .__main__.:",
 ]
