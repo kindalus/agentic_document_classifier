@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include CHANGELOG.md
+include requirements.txt
+include requirements-dev.txt
+recursive-include src/agentic_document_classifier/prompts *.md
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+recursive-exclude * *.orig
+recursive-exclude * *.rej
+exclude .gitignore
+exclude .pre-commit-config.yaml
+prune .git
+prune .github
+prune tests
+prune docs/_build
