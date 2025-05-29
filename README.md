@@ -78,7 +78,7 @@ pip install -e ".[dev]"
 Configure a variável de ambiente com sua chave da API do Google AI:
 
 ```bash
-export GOOGLE_AI_API_KEY="sua_chave_aqui"
+export GOOGLE_API_KEY="sua_chave_aqui"
 ```
 
 ## 📖 Uso

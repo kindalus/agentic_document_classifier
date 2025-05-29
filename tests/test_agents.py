@@ -20,7 +20,7 @@ class TestBaseAgent:
         agent = BaseAgent()
         assert agent is not None
 
-    @patch.dict(os.environ, {'GOOGLE_AI_API_KEY': 'test_key'})
+    @patch.dict(os.environ, {'GOOGLE_API_KEY': 'test_key'})
     def test_base_agent_with_api_key(self):
         """Test BaseAgent initialization with API key."""
         agent = BaseAgent()
@@ -30,7 +30,7 @@ class TestBaseAgent:
 class TestTriageAgent:
     """Test cases for TriageAgent class."""
 
-    @patch.dict(os.environ, {'GOOGLE_AI_API_KEY': 'test_key'})
+    @patch.dict(os.environ, {'GOOGLE_API_KEY': 'test_key'})
     def test_triage_agent_initialization(self):
         """Test that TriageAgent can be initialized."""
         agent = TriageAgent()
@@ -117,7 +117,7 @@ class TestPackageStructure:
 class TestIntegration:
     """Integration tests for the document classification system."""
 
-    @patch.dict(os.environ, {'GOOGLE_AI_API_KEY': 'test_key'})
+    @patch.dict(os.environ, {'GOOGLE_API_KEY': 'test_key'})
     def test_full_classification_pipeline(self):
         """Test the full classification pipeline with mocked components."""
         # This is a placeholder for integration tests

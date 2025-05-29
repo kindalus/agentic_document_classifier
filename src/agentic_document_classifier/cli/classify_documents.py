@@ -72,75 +72,75 @@ Examples:
   agentic-classify --output results.json document1.pdf document2.pdf
         """
     )
-    
+
     parser.add_argument(
         'files',
         nargs='+',
         help='PDF files to classify'
     )
-    
+
     parser.add_argument(
         '--processes',
         type=int,
         default=4,
         help='Number of parallel processes (default: 4)'
     )
-    
+
     parser.add_argument(
         '--output',
         type=str,
         help='Output file for results (JSON format)'
     )
-    
+
     parser.add_argument(
         '--verbose',
         action='store_true',
         help='Enable verbose output'
     )
-    
+
     args = parser.parse_args()
-    
+
     # Validate and collect files
     files_to_classify: list[str] = []
     for file_path in args.files:
         path = Path(file_path)
-        
+
         if path.is_dir():
             if args.verbose:
                 print(f"Warning: Skipping directory '{file_path}'")
             continue
-            
+
         if not path.exists():
             print(f"Error: File '{file_path}' not found")
             sys.exit(1)
-            
+
         if not file_path.lower().endswith('.pdf'):
             if args.verbose:
                 print(f"Warning: Skipping non-PDF file '{file_path}'")
             continue
-            
+
         files_to_classify.append(file_path)
-    
+
     if not files_to_classify:
         print("Error: No valid PDF files found")
         sys.exit(1)
-    
+
     # Check API key
-    if not os.getenv('GOOGLE_AI_API_KEY'):
-        print("Error: GOOGLE_AI_API_KEY environment variable not set")
+    if not os.getenv('GOOGLE_API_KEY'):
+        print("Error: GOOGLE_API_KEY environment variable not set")
         print("Please set your Google AI API key:")
-        print("export GOOGLE_AI_API_KEY='your_api_key_here'")
+        print("export GOOGLE_API_KEY='your_api_key_here'")
         sys.exit(1)
-    
+
     print(f"🚀 Starting classification of {len(files_to_classify)} files...")
     print(f"📊 Using {args.processes} parallel processes")
-    
+
     try:
         with multiprocessing.Pool(processes=args.processes) as pool:
             results = pool.map(classify_document, files_to_classify)
-        
+
         print(f"\n✅ Classification completed: {len(files_to_classify)} files processed")
-        
+
         # Output results
         all_results = []
         for i, result in enumerate(results):
@@ -151,17 +151,17 @@ Examples:
                     print(result.model_dump_json(indent=2))
                 else:
                     print("❌ Classification failed")
-            
+
             if result:
                 all_results.append(result.model_dump())
-        
+
         # Save to output file if specified
         if args.output:
             output_path = Path(args.output)
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(all_results, f, indent=2, ensure_ascii=False)
             print(f"\n💾 Results saved to: {output_path}")
-            
+
     except KeyboardInterrupt:
         print("\n⚠️  Classification interrupted by user")
         sys.exit(1)

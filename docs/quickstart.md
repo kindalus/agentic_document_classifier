@@ -11,7 +11,7 @@ pip install agentic_document_classifier
 Set your Google AI API key:
 
 ```bash
-export GOOGLE_AI_API_KEY="your_api_key_here"
+export GOOGLE_API_KEY="your_api_key_here"
 ```
 
 ## Basic Usage
@@ -40,7 +40,7 @@ agentic-classify --processes 8 --output results.json documents/*.pdf
 
 ```python
 import os
-os.environ['GOOGLE_AI_API_KEY'] = 'your_api_key_here'
+os.environ['GOOGLE_API_KEY'] = 'your_api_key_here'
 
 from agentic_document_classifier.agents.triage_agent import TriageAgent
 from agentic_document_classifier.agents.specialized import InvoiceClassifierAgent
@@ -152,7 +152,7 @@ triage_prompt = load_prompt("triage_prompt")
 **API Key Error**:
 
 ```
-Error: GOOGLE_AI_API_KEY environment variable not set
+Error: GOOGLE_API_KEY environment variable not set
 ```
 
 Solution: Set your API key as shown in setup
