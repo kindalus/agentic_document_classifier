@@ -63,12 +63,10 @@ class SuccessOutput(BaseModel):
     notas_classificacao: str = Field(
         description="Justificação da classificação, em Português Europeu pré-1990. Obrigatório."
     )
-
     tipo_documento: InvoiceDocumentType
     metadados_documento: MetadadosProformaFactura | MetadadosGlobalGenerica | MetadadosNotaDebito | MetadadosNotaCredito | MetadadosRecibo
 
 
-    conteudo: str
 
 # Schema final que pode ser qualquer um dos tipos de saída
 AgentOutput = SuccessOutput | ErrorOutput

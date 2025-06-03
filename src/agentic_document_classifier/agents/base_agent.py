@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 from google import genai
 from pydantic import BaseModel, Field
 from typing import Optional
@@ -17,7 +16,7 @@ class BaseAgent:
 
     def __init__(self, response_type, prompt_name, model="gemini-2.5-flash-preview-05-20"):
         """Initialize the base agent.
-        
+
         Args:
             response_type: Pydantic model for response validation
             prompt_name: Name of the prompt file (without .md extension)
@@ -25,7 +24,7 @@ class BaseAgent:
         """
         self.client = genai.Client()
         self.model = model
-        
+
         # Load prompt from the prompts package
         prompt_path = PROMPTS_DIR / f"{prompt_name}.md"
         self.prompt_ref = self.client.files.upload(file=str(prompt_path))

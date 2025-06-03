@@ -17,13 +17,13 @@ class TestBaseAgent:
 
     def test_base_agent_initialization(self):
         """Test that BaseAgent can be initialized."""
-        agent = BaseAgent()
+        agent = BaseAgent(response_type=Mock(), prompt_name='test_prompt')
         assert agent is not None
 
     @patch.dict(os.environ, {'GOOGLE_API_KEY': 'test_key'})
     def test_base_agent_with_api_key(self):
         """Test BaseAgent initialization with API key."""
-        agent = BaseAgent()
+        agent = BaseAgent(response_type=Mock(), prompt_name='test_prompt')
         assert agent is not None
 
 

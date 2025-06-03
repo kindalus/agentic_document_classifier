@@ -38,10 +38,6 @@ class SuccessOutput(BaseModel):
     tipo_documento: HrDocumentType
     metadados_documento: MetadadosFolhaRemuneracao | MetadadosFolhaRemuneracaoINSS | None
 
-
-
-    conteudo: str
-
 # Schema final que pode ser qualquer um dos tipos de saída
 AgentOutput = SuccessOutput | ErrorOutput
 
