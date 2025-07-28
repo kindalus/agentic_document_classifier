@@ -3,7 +3,7 @@ from google import genai
 from pydantic import BaseModel, Field
 from typing import Optional
 
-from ..prompts import load_prompt, PROMPTS_DIR
+from ..prompts import PROMPTS_DIR
 
 class ErrorOutput(BaseModel):
     localizacao_ficheiro: str = Field(description="Ecoado da entrada.")
