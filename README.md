@@ -63,6 +63,8 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 
 ```bash
 pip install agentic_document_classifier
+ou
+pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
 ### Instalação para desenvolvimento

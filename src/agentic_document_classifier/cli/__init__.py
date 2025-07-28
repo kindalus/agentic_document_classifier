@@ -5,7 +5,7 @@ for document classification operations.
 """
 
 from .classify_documents import main as classify_main
-from .classify_documents import main as classify_document
+from .classify_documents import classify_document
 
 __all__ = [
     "classify_main",
