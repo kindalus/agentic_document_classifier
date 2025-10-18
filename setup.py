@@ -6,18 +6,20 @@ from pathlib import Path
 
 # Read the contents of README file
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text(encoding='utf-8')
+long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 # Read requirements from requirements.txt
 requirements = []
 requirements_path = this_directory / "requirements.txt"
 if requirements_path.exists():
-    requirements = requirements_path.read_text().strip().split('\n')
-    requirements = [req.strip() for req in requirements if req.strip() and not req.startswith('#')]
+    requirements = requirements_path.read_text().strip().split("\n")
+    requirements = [
+        req.strip() for req in requirements if req.strip() and not req.startswith("#")
+    ]
 
-setup(
+_ = setup(
     name="agentic_document_classifier",
-    version="0.1.4",
+    version="0.2.0",
     author="Agentic Document Classifier Team",
     description="Intelligent document classification system using AI agents based on Google Gemini",
     long_description=long_description,
@@ -78,7 +80,6 @@ setup(
     entry_points={
         "console_scripts": [
             "agentic-classify=agentic_document_classifier.cli.classify_documents:main",
-            "agentic-triage=agentic_document_classifier.agents.triage_agent:main",
         ],
     },
     keywords=[
