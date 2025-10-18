@@ -117,7 +117,9 @@ def example_prompt_usage():
         # Show a snippet of the triage prompt
         print("\n📖 Triage prompt snippet:")
         print("-" * 30)
-        print(triage_prompt[:200] + "..." if len(triage_prompt) > 200 else triage_prompt)
+        print(
+            triage_prompt[:200] + "..." if len(triage_prompt) > 200 else triage_prompt
+        )
 
     except Exception as e:
         print(f"❌ Error loading prompts: {e}")
@@ -156,33 +158,33 @@ def show_available_document_types():
             "Facturas-Recibo",
             "Facturas Pró-Forma",
             "Notas de Crédito e Débito",
-            "Recibos"
+            "Recibos",
         ],
         "DOCUMENTOS_ADUANEIROS": [
             "Documento Único Provisório",
             "Declaração Aduaneira (ASYCUDAWorld)",
-            "Notas de Liquidação e Desalfandegamento"
+            "Notas de Liquidação e Desalfandegamento",
         ],
         "DOCUMENTOS_FRETE": [
             "Conhecimento de Embarque (Bill of Lading)",
             "Carta de Porte (Air Waybill)",
             "Certificado de Embarque (ARCCLA)",
-            "Packing Lists"
+            "Packing Lists",
         ],
         "DOCUMENTOS_FISCAIS": [
             "Notas de Liquidação (AGT)",
             "Guias de Pagamento INSS",
-            "Mapas de Retenções e Impostos"
+            "Mapas de Retenções e Impostos",
         ],
         "DOCUMENTOS_BANCARIOS": [
             "Extractos Bancários",
             "Comprovativos de Transferência",
-            "Facturas de Comissões Bancárias"
+            "Facturas de Comissões Bancárias",
         ],
         "DOCUMENTOS_RH": [
             "Folhas de Remuneração INSS",
-            "Documentos de gestão de pessoal"
-        ]
+            "Documentos de gestão de pessoal",
+        ],
     }
 
     for category, doc_types in categories.items():
@@ -214,7 +216,7 @@ def main():
         print("\n💡 Next steps:")
         print("  1. Set your GOOGLE_API_KEY environment variable")
         print("  2. Prepare some PDF documents for classification")
-        print("  3. Use the CLI tools: agentic-classify or agentic-triage")
+        print("  3. Use the CLI tools: agentic-classify ")
         print("  4. Integrate the library into your own projects")
 
     except Exception as e:

@@ -87,12 +87,6 @@ export GOOGLE_API_KEY="sua_chave_aqui"
 
 ### Interface de Linha de Comando
 
-#### Triagem Inicial
-
-```bash
-agentic-triage documento.pdf
-```
-
 #### Processamento em Lote
 
 ```bash

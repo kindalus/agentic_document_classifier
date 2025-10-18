@@ -20,10 +20,6 @@ export GOOGLE_API_KEY="your_api_key_here"
 
 Classify a single document:
 
-```bash
-agentic-triage document.pdf
-```
-
 Classify multiple documents:
 
 ```bash

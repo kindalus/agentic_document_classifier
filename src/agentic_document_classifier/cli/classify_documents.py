@@ -17,7 +17,8 @@ def classify_document(filename: str):
         if type(result) is ErrorOutput:
             return result
 
-        del result.conteudo  # pyright: ignore[reportAttributeAccessIssue]
+        if hasattr(result, "conteudo"):
+            del result.conteudo  # pyright: ignore[reportAttributeAccessIssue]
         return result
 
     except Exception as e:

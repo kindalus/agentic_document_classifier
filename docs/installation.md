@@ -107,7 +107,6 @@ Or test the CLI tools:
 
 ```bash
 agentic-classify --help
-agentic-triage --help
 ```
 
 ## Docker Installation
