@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentic_document_classifier"
-version = "0.2.2"
-description = "Intelligent document classification system using AI agents based on Google Gemini"
+version = "0.3.0"
+description = "Intelligent document classification system using AI agents based on Google Gemini and Pydantic AI"
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "Apache-2.0" }
@@ -15,12 +15,15 @@ keywords = [
     "document-classification",
     "ai-agents",
     "gemini",
+    "pydantic-ai",
     "pdf-processing",
     "document-intelligence",
     "business-documents",
+    "llm",
+    "multi-agent-system",
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: End Users/Desktop",
     "License :: OSI Approved :: Apache Software License",
@@ -38,6 +41,10 @@ classifiers = [
 ]
 dependencies = [
     "pydantic>=2.0.0",
+    "pydantic-ai>=0.0.14",
+    "google-genai>=1.17.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
 ]
 
 [project.optional-dependencies]

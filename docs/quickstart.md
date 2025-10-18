@@ -4,6 +4,8 @@
 
 ```bash
 pip install agentic_document_classifier
+# or from source
+pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
 ## Setup
@@ -20,6 +22,10 @@ export GOOGLE_API_KEY="your_api_key_here"
 
 Classify a single document:
 
+```bash
+agentic-classify documento.pdf
+```
+
 Classify multiple documents:
 
 ```bash
@@ -34,28 +40,64 @@ agentic-classify --processes 8 --output results.json documents/*.pdf
 
 ### Python API
 
+#### Simple Classification
+
 ```python
 import os
 os.environ['GOOGLE_API_KEY'] = 'your_api_key_here'
 
-from agentic_document_classifier.agents.triage_agent import TriageAgent
-from agentic_document_classifier.agents.specialized import InvoiceClassifierAgent
+from agentic_document_classifier import classify_document
 
-# Step 1: Triage the document
-triage_agent = TriageAgent()
-triage_result = triage_agent.run("invoice.pdf")
+# Classify a document
+result = classify_document("invoice.pdf")
 
-print(f"Document category: {triage_result.grupo_documento}")
-print(f"Document number: {triage_result.numero_documento}")
-print(f"Issue date: {triage_result.data_emissao}")
+# Check the result
+if hasattr(result, 'erro'):
+    print(f"Error: {result.erro}")
+else:
+    print(f"Category: {result.grupo_documento}")
+    print(f"Document type: {result.tipo_documento}")
+    print(f"Document number: {result.numero_documento}")
+    print(f"Issue date: {result.data_emissao}")
+    print(f"Metadata: {result.metadados_documento}")
+```
 
-# Step 2: Detailed classification (if needed)
-if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
-    invoice_agent = InvoiceClassifierAgent()
-    detailed_result = invoice_agent.run(triage_result.model_dump_json())
+#### Advanced Usage - Direct Agent Access
 
-    print(f"Document type: {detailed_result.tipo_documento}")
-    print(f"Total amount: {detailed_result.metadados_documento.total}")
+```python
+from agentic_document_classifier.agents import (
+    classify_document,
+    ocr_agent,
+    triage_agent,
+    banking_agent,
+    customs_agent,
+)
+from pathlib import Path
+from pydantic_ai import BinaryContent
+
+# Manual OCR
+pdf_path = Path("document.pdf")
+data = BinaryContent(pdf_path.read_bytes(), media_type="application/pdf")
+ocr_result = ocr_agent.run_sync([
+    "Converte o documento em markdown",
+    data,
+])
+print(ocr_result.output)
+
+# Manual Triage
+from agentic_document_classifier.agents import DocumentPath
+triage_result = triage_agent.run_sync(
+    ["Classifica este documento", f"Localização: {pdf_path}", ocr_result.output],
+    deps=DocumentPath(str(pdf_path))
+)
+print(triage_result.output.model_dump_json(indent=2))
+
+# Direct specialist agent usage
+if triage_result.output.grupo_documento == "DOCUMENTOS_BANCARIOS":
+    banking_result = banking_agent.run_sync(
+        ["Classifica este documento", triage_result.output.model_dump_json()]
+    )
+    print(banking_result.output.model_dump_json(indent=2))
 ```
 
 ## Document Categories
@@ -72,6 +114,8 @@ if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
 
 ## Example Output
 
+### Invoice (Commercial Document)
+
 ```json
 {
   "localizacao_ficheiro": "/path/to/invoice.pdf",
@@ -81,13 +125,44 @@ if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
   "hora_emissao": "15:45",
   "notas_triagem": "Documento identificado como factura comercial...",
   "tipo_documento": "FACTURA",
+  "notas_classificacao": "Factura padrão com todos os elementos obrigatórios...",
   "metadados_documento": {
     "nif_emitente": "123456789",
     "nome_emitente": "Empresa ABC Lda",
     "nif_cliente": "987654321",
     "nome_cliente": "Cliente XYZ",
+    "meio_pagamento": "Transferência Bancária",
+    "moeda": "AOA",
+    "total_sem_iva": 100000.0,
+    "iva": 14000.0,
     "total": 114000.0,
-    "moeda": "AOA"
+    "observacoes": "Pagamento a 30 dias"
+  }
+}
+```
+
+### Customs Document
+
+```json
+{
+  "localizacao_ficheiro": "/path/to/customs.pdf",
+  "grupo_documento": "DOCUMENTOS_ADUANEIROS",
+  "numero_documento": "2024 R 1234",
+  "data_emissao": "2024-10-26",
+  "hora_emissao": null,
+  "notas_triagem": "Documento Único identificado...",
+  "tipo_documento": "DOCUMENTO_UNICO",
+  "notas_classificacao": "Declaração aduaneira completa...",
+  "metadados_documento": {
+    "referencia_registo": "2024 R 1234",
+    "nif_importador": "987654321",
+    "nome_importador": "Importadora XYZ Lda",
+    "origem_mercadoria": "China",
+    "total_facturado": 50000.0,
+    "manifesto": "MF123456",
+    "moeda": "USD",
+    "entidade_emissora": "AGT",
+    "observacoes": null
   }
 }
 ```
@@ -97,51 +172,74 @@ if triage_result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
 Process multiple documents efficiently:
 
 ```python
-from agentic_document_classifier.cli.classify_documents import classify_document
+from agentic_document_classifier import classify_document
 import multiprocessing
 
 documents = ["doc1.pdf", "doc2.pdf", "doc3.pdf"]
 
+def process_doc(path):
+    result = classify_document(path)
+    # Remove content field to reduce output size
+    if hasattr(result, 'conteudo'):
+        delattr(result, 'conteudo')
+    return result
+
 with multiprocessing.Pool(processes=4) as pool:
-    results = pool.map(classify_document, documents)
+    results = pool.map(process_doc, documents)
 
 for result in results:
-    print(result.model_dump_json(indent=2))
+    if hasattr(result, 'erro'):
+        print(f"Error: {result.erro}")
+    else:
+        print(result.model_dump_json(indent=2))
 ```
 
 ## Error Handling
 
 ```python
-from agentic_document_classifier.agents.base_agent import ErrorOutput
+from agentic_document_classifier import classify_document
+from agentic_document_classifier.agents import ErrorOutput
 
-result = triage_agent.run("document.pdf")
+result = classify_document("document.pdf")
 
 if isinstance(result, ErrorOutput):
     print(f"Error processing document: {result.erro}")
+    print(f"Location: {result.localizacao_ficheiro}")
+    if result.notas_triagem:
+        print(f"Triage notes: {result.notas_triagem}")
 else:
     print(f"Successfully classified: {result.grupo_documento}")
-```
-
-## Custom Prompts
-
-Load and use custom prompts:
-
-```python
-from agentic_document_classifier.prompts import load_prompt
-
-# Load existing prompt
-triage_prompt = load_prompt("triage_prompt")
-
-# Use with custom agent (advanced usage)
-# See API documentation for details
+    print(f"Document type: {result.tipo_documento}")
 ```
 
 ## Performance Tips
 
 1. **Parallel Processing**: Use multiple processes for batch operations
+
+```bash
+agentic-classify --processes 8 documents/*.pdf
+```
+
 2. **API Key Management**: Keep your API key secure and monitor usage
+
 3. **File Validation**: Ensure PDFs are valid and not password-protected
+
 4. **Memory Management**: Process large batches in chunks
+
+```python
+from itertools import islice
+
+def chunked(iterable, n):
+    iterator = iter(iterable)
+    while chunk := list(islice(iterator, n)):
+        yield chunk
+
+documents = [f"doc{i}.pdf" for i in range(100)]
+
+for chunk in chunked(documents, 10):
+    results = process_batch(chunk)
+    save_results(results)
+```
 
 ## Common Issues
 
@@ -164,14 +262,49 @@ Solution: Check file path and permissions
 **Processing Error**:
 
 ```
-Error processing prompt
+Classification error: ...
 ```
 
-Solution: Verify PDF is valid and not corrupted
+Solution: Verify PDF is valid, not corrupted, and not password-protected
+
+**Import Error**:
+
+```
+ModuleNotFoundError: No module named 'pydantic_ai'
+```
+
+Solution: Install all dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+## Configuration
+
+### Custom Model
+
+To use a different model, modify `agents.py`:
+
+```python
+# Change from gemini-2.5-flash to gemini-1.5-pro
+ocr_agent = Agent(
+    "gemini-1.5-pro",
+    output_type=str,
+    system_prompt=load_markdown("ocr_prompt.md"),
+)
+```
+
+### Debug Mode
+
+Enable debug output in `agents.py`:
+
+```python
+DEBUG = True  # Shows intermediate outputs
+```
 
 ## Next Steps
 
-- Read the [API Documentation](api.md) for detailed usage
+- Read the [Installation Guide](installation.md) for advanced setup options
 - Check [Examples](../examples/) for more complex scenarios
-- See [Installation Guide](installation.md) for advanced setup
-- Join our community for support and discussions
+- See the main [README](../README.md) for architecture details
+- Explore the [prompts](../src/agentic_document_classifier/prompts/) to understand agent behavior

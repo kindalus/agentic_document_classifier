@@ -1,14 +1,15 @@
 # Agentic Document Classifier
 
-Um sistema de classificação inteligente de documentos empresariais utilizando agentes de IA baseados no Google Gemini. O sistema automatiza a triagem e classificação de documentos PDF em categorias específicas, extraindo metadados relevantes de cada tipo de documento.
+Um sistema de classificação inteligente de documentos empresariais utilizando agentes de IA baseados no Google Gemini (via Pydantic AI). O sistema automatiza a triagem e classificação de documentos PDF em categorias específicas, extraindo metadados relevantes de cada tipo de documento.
 
 ## 🚀 Funcionalidades
 
 - **Classificação Automática**: Classifica documentos PDF em 6 categorias principais + categoria "Outros"
 - **Processamento Multiprocesso**: Suporte para processamento paralelo de múltiplos documentos
 - **Extração de Metadados**: Extrai informações específicas baseadas no tipo de documento
-- **Agentes Especializados**: Cada categoria possui um agente especializado para classificação detalhada
+- **Agentes Especializados**: Sistema multi-agente com orquestração e delegação
 - **Output Estruturado**: Resultados em formato JSON com schema Pydantic
+- **Arquitetura Moderna**: Baseada em Pydantic AI com suporte a múltiplos modelos LLM
 
 ## 📋 Categorias de Documentos Suportadas
 
@@ -20,33 +21,32 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 
 ### 2. Documentos Aduaneiros (`DOCUMENTOS_ADUANEIROS`)
 
-- Documento Único Provisório
-- Declaração Aduaneira (ASYCUDAWorld)
-- Notas de Liquidação e Desalfandegamento
+- Documento Único Provisório (DUP)
+- Documento Único (Declaração Aduaneira ASYCUDAWorld)
+- Notas de Liquidação, Recibos e Desalfandegamento
 
 ### 3. Documentos de Frete (`DOCUMENTOS_FRETE`)
 
 - Conhecimento de Embarque (Bill of Lading)
 - Carta de Porte (Air Waybill)
 - Certificado de Embarque (ARCCLA)
-- Packing Lists
 
 ### 4. Documentos Fiscais (`DOCUMENTOS_FISCAIS`)
 
 - Notas de Liquidação (AGT)
 - Guias de Pagamento INSS
-- Mapas de Retenções e Impostos
+- Recibos de Pagamento e Comprovativos
 
 ### 5. Documentos Bancários (`DOCUMENTOS_BANCARIOS`)
 
 - Extractos Bancários
 - Comprovativos de Transferência
-- Facturas de Comissões Bancárias
+- Comprovativos de Pagamento
 
 ### 6. Documentos de Recursos Humanos (`DOCUMENTOS_RH`)
 
+- Folhas de Remuneração
 - Folhas de Remuneração INSS
-- Documentos de gestão de pessoal
 
 ### 7. Outros Documentos (`OUTROS_DOCUMENTOS`)
 
@@ -63,7 +63,7 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 
 ```bash
 pip install agentic_document_classifier
-ou
+# ou
 pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
@@ -72,7 +72,9 @@ pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```bash
 git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
-pip install -e ".[dev]"
+pip install -r requirements.txt
+# ou para desenvolvimento completo
+pip install -r requirements-dev.txt
 ```
 
 ### Configuração da API
@@ -87,56 +89,53 @@ export GOOGLE_API_KEY="sua_chave_aqui"
 
 ### Interface de Linha de Comando
 
-#### Processamento em Lote
+#### Classificação de Documentos
 
 ```bash
+# Classificar um único documento
+agentic-classify documento.pdf
+
+# Classificar múltiplos documentos
 agentic-classify documento1.pdf documento2.pdf documento3.pdf
+
+# Processamento em lote com configuração personalizada
+agentic-classify --processes 8 --output resultados.json documentos/*.pdf
+
+# Com saída verbosa
+agentic-classify --verbose documento.pdf
 ```
 
 ### Uso Programático
 
 ```python
-from agentic_document_classifier.agents.triage_agent import TriageAgent
-from agentic_document_classifier.agents.specialized import InvoiceClassifierAgent
+from agentic_document_classifier import classify_document
 
-# Triagem inicial
-triage_agent = TriageAgent()
-result = triage_agent.run("documento.pdf")
+# Classificar um documento
+result = classify_document("caminho/para/documento.pdf")
 
-# Classificação especializada
-if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
-    invoice_agent = InvoiceClassifierAgent()
-    detailed_result = invoice_agent.run(result)
+# Verificar o tipo de resultado
+if hasattr(result, 'erro'):
+    print(f"Erro: {result.erro}")
+else:
+    print(f"Categoria: {result.grupo_documento}")
+    print(f"Tipo: {result.tipo_documento}")
+    print(f"Metadados: {result.metadados_documento}")
 ```
 
 ## 📊 Estrutura de Output
 
-### Triagem Inicial
+### Exemplo de Output - Documento Comercial (Factura)
 
 ```json
 {
-  "localizacao_ficheiro": "/caminho/para/documento.pdf",
+  "localizacao_ficheiro": "/caminho/para/factura.pdf",
   "grupo_documento": "DOCUMENTOS_COMERCIAIS",
   "numero_documento": "FT 01P2024/5678",
   "data_emissao": "2024-10-26",
   "hora_emissao": "15:45",
-  "notas_triagem": "Documento identificado como factura...",
-  "conteudo": "# Conteúdo em Markdown..."
-}
-```
-
-### Classificação Detalhada (Exemplo: Documentos Comerciais)
-
-```json
-{
-  "localizacao_ficheiro": "/caminho/para/documento.pdf",
-  "grupo_documento": "DOCUMENTOS_COMERCIAIS",
-  "numero_documento": "FT 01P2024/5678",
-  "data_emissao": "2024-10-26",
-  "hora_emissao": "15:45",
-  "notas_triagem": "Documento identificado como factura...",
-  "notas_classificacao": "Factura padrão com todos os elementos obrigatórios...",
+  "notas_triagem": "Documento identificado como factura comercial...",
   "tipo_documento": "FACTURA",
+  "notas_classificacao": "Factura padrão com todos os elementos obrigatórios...",
   "metadados_documento": {
     "nif_emitente": "123456789",
     "nome_emitente": "Empresa ABC Lda",
@@ -152,103 +151,278 @@ if result.grupo_documento == "DOCUMENTOS_COMERCIAIS":
 }
 ```
 
-## 🏗️ Arquitectura
+### Exemplo de Output - Documento Aduaneiro
+
+```json
+{
+  "localizacao_ficheiro": "/caminho/para/du.pdf",
+  "grupo_documento": "DOCUMENTOS_ADUANEIROS",
+  "numero_documento": "2024 R 1234",
+  "data_emissao": "2024-10-26",
+  "hora_emissao": null,
+  "notas_triagem": "Documento Único identificado...",
+  "tipo_documento": "DOCUMENTO_UNICO",
+  "notas_classificacao": "Declaração aduaneira completa...",
+  "metadados_documento": {
+    "referencia_registo": "2024 R 1234",
+    "nif_importador": "987654321",
+    "nome_importador": "Importadora XYZ Lda",
+    "origem_mercadoria": "China",
+    "total_facturado": 50000.0,
+    "manifesto": "MF123456",
+    "moeda": "USD",
+    "entidade_emissora": "AGT",
+    "observacoes": null
+  }
+}
+```
+
+## 🏗️ Arquitetura
+
+### Visão Geral
+
+O sistema utiliza uma arquitetura multi-agente baseada em **Pydantic AI** com padrão de orquestração e delegação:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Documento PDF                             │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   OCR Agent                                  │
+│         (Converte PDF para Markdown)                         │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Triage Agent                                 │
+│      (Identifica categoria do documento)                     │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+        ┌─────────────┴────────────┐
+        │                          │
+        ▼                          ▼
+┌──────────────────┐     ┌──────────────────────┐
+│ Orchestration    │     │  Direct Processing   │
+│ Agent            │     │  (via Python)        │
+│ (Tool-based)     │     └──────────────────────┘
+└────────┬─────────┘              │
+         │                        │
+         ▼                        ▼
+┌─────────────────────────────────────────────────────────────┐
+│            Specialized Classification Agents                 │
+│                                                              │
+│  • Banking Agent    • Customs Agent    • Freight Agent      │
+│  • HR Agent         • Invoice Agent    • Taxes Agent        │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Structured Output (JSON)                        │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ### Estrutura do Pacote
 
 ```
 agentic_document_classifier/
 ├── src/agentic_document_classifier/
-│   ├── agents/
-│   │   ├── base_agent.py           # Classe base para agentes
-│   │   ├── triage_agent.py         # Agente de triagem inicial
-│   │   └── specialized/            # Agentes especializados
-│   │       ├── banking_classifier_agent.py
-│   │       ├── customs_classifier_agent.py
-│   │       ├── freight_classifier_agent.py
-│   │       ├── hr_classifier_agent.py
-│   │       ├── invoice_classifier_agent.py
-│   │       └── taxes_classifier_agent.py
-│   ├── prompts/                    # Templates de prompts
-│   └── cli/                        # Ferramentas de linha de comando
-├── tests/                          # Testes automatizados
-├── docs/                           # Documentação
-└── examples/                       # Exemplos de uso
+│   ├── __init__.py              # Exporta classify_document
+│   ├── agents.py                # Todos os agentes consolidados
+│   ├── cli/
+│   │   ├── __init__.py
+│   │   └── classify_documents.py  # CLI principal
+│   └── prompts/                 # Templates de prompts
+│       ├── __init__.py
+│       ├── ocr_prompt.md
+│       ├── triage_prompt.md
+│       ├── orchestration_prompt.md
+│       ├── banking_classifier_prompt.md
+│       ├── customs_classifier_prompt.md
+│       ├── freight_classifier_prompt.md
+│       ├── hr_classifier_prompt.md
+│       ├── invoice_classifier_prompt.md
+│       └── taxes_classifier_prompt.md
+├── examples/                    # Exemplos de uso
+├── docs/                        # Documentação
+├── tests/                       # Testes (a desenvolver)
+├── requirements.txt             # Dependências de produção
+├── requirements-dev.txt         # Dependências de desenvolvimento
+├── pyproject.toml              # Configuração do pacote
+├── README.md
+└── CHANGELOG.md
 ```
 
 ### Componentes Principais
 
-- **`BaseAgent`**: Classe base para todos os agentes de classificação
-- **`TriageAgent`**: Agente responsável pela triagem inicial dos documentos
-- **`CLI Tools`**: Ferramentas de linha de comando para processamento em lote
-- **Agentes Especializados**: Um agente para cada categoria de documento
+#### 1. Agentes de IA (agents.py)
+
+Todos os agentes estão consolidados num único módulo:
+
+- **OCR Agent**: Converte PDF para Markdown
+- **Triage Agent**: Identifica categoria do documento
+- **Orchestration Agent**: Coordena o fluxo de trabalho (opcional, via tools)
+- **Specialized Agents**: 6 agentes especializados por categoria
+
+#### 2. Modelos de Dados
+
+Definidos usando **Pydantic** para validação e estruturação:
+
+```python
+from enum import Enum
+from pydantic import BaseModel, Field
+
+class DocumentGroup(str, Enum):
+    DOCUMENTOS_COMERCIAIS = "DOCUMENTOS_COMERCIAIS"
+    DOCUMENTOS_ADUANEIROS = "DOCUMENTOS_ADUANEIROS"
+    # ... outros grupos
+
+class TriageOutput(BaseModel):
+    localizacao_ficheiro: str
+    grupo_documento: DocumentGroup
+    numero_documento: str
+    data_emissao: str
+    # ... outros campos
+```
+
+#### 3. Prompts Especializados
+
+Cada agente utiliza prompts específicos em português europeu (pré-AO 1990):
+
+- Instruções detalhadas por tipo de documento
+- Exemplos e casos de uso
+- Regras de extração de metadados
 
 ### Fluxo de Processamento
 
-1. **Triagem**: O documento é analisado pelo `TriageAgent` para determinar a categoria
-2. **Classificação**: Com base na categoria, o documento é enviado para o agente especializado
-3. **Extração**: O agente especializado extrai metadados específicos do tipo de documento
-4. **Output**: Resultado estruturado em JSON com todas as informações extraídas
+1. **OCR**: Documento PDF → Conteúdo Markdown
+2. **Triagem**: Análise inicial → Categoria do documento
+3. **Classificação**: Agente especializado → Tipo específico + Metadados
+4. **Output**: Resultado estruturado em JSON
 
-### Prompts Especializados
+### Modos de Operação
 
-Cada agente utiliza prompts específicos em português europeu, organizados no pacote `prompts`:
+#### Modo Programático (Recomendado)
 
-- `triage_prompt.md`: Instruções para triagem inicial
-- `invoice_classifier_prompt.md`: Classificação de documentos comerciais
-- `customs_classifier_prompt.md`: Classificação de documentos aduaneiros
-- `freight_classifier_prompt.md`: Classificação de documentos de frete
-- `taxes_classifier_prompt.md`: Classificação de documentos fiscais
-- `banking_classifier_prompt.md`: Classificação de documentos bancários
-- `hr_classifier_prompt.md`: Classificação de documentos de RH
+```python
+from agentic_document_classifier import classify_document
+
+result = classify_document("documento.pdf")
+```
+
+Usa delegação programática Python para eficiência máxima.
+
+#### Modo Orquestração (Experimental)
+
+```python
+from agentic_document_classifier.agents import classify_document_auto
+
+result = classify_document_auto("documento.pdf")
+```
+
+Usa o agente de orquestração com tools para workflow completo gerido pelo LLM.
 
 ## ⚙️ Configuração
 
-### Parâmetros de Processamento
+### Modelo de IA
 
-- **Modelo AI**: `gemini-2.5-flash-preview-05-20` (configurável)
-- **Processos Paralelos**: 8 (configurável no `classify_documents.py`)
-- **Formato de Input**: PDF apenas
-- **Formato de Output**: JSON estruturado
+Por padrão, o sistema utiliza `gemini-2.5-flash`. Para alterar:
 
-### Personalização
+```python
+# Em agents.py, modificar a definição dos agentes:
+ocr_agent = Agent(
+    "gemini-1.5-pro",  # Ou outro modelo compatível
+    # ...
+)
+```
 
-Para personalizar o comportamento dos agentes:
+### Processos Paralelos
 
-1. Modifique os prompts em arquivos `.md` correspondentes
-2. Ajuste os schemas Pydantic nos arquivos dos agentes
-3. Configure o número de processos paralelos conforme necessário
+Para processamento em lote via CLI:
+
+```bash
+agentic-classify --processes 8 documentos/*.pdf
+```
+
+### Debug
+
+Ativar modo debug em `agents.py`:
+
+```python
+DEBUG = True  # Mostra outputs intermediários
+```
 
 ## 🔧 Desenvolvimento
 
-### Estrutura do Projeto
+### Instalação para Desenvolvimento
 
+```bash
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
+pip install -r requirements-dev.txt
 ```
-agentic_document_classifier/
-├── README.md
-├── LICENSE
-├── pyproject.toml                # Configuração moderna do pacote
-├── setup.py                      # Setup tradicional (compatibilidade)
-├── requirements.txt              # Dependências de produção
-├── requirements-dev.txt          # Dependências de desenvolvimento
-├── MANIFEST.in                   # Arquivos incluídos na distribuição
-├── CHANGELOG.md                  # Histórico de mudanças
-├── src/agentic_document_classifier/  # Código fonte do pacote
-├── tests/                        # Testes automatizados
-├── docs/                         # Documentação
-├── examples/                     # Exemplos de uso
-└── .github/workflows/            # CI/CD GitHub Actions
+
+### Estrutura de Desenvolvimento
+
+```bash
+# Executar testes
+pytest
+
+# Formatação de código
+black src tests
+isort src tests
+
+# Linting
+flake8 src
+mypy src
+
+# Build
+python -m build
 ```
 
 ### Extensão do Sistema
 
 Para adicionar uma nova categoria de documento:
 
-1. Crie um novo agente herdando de `BaseAgent`
-2. Defina o schema Pydantic para os metadados específicos
-3. Crie um prompt especializado em arquivo `.md`
-4. Adicione a nova categoria no enum `DocumentGroup`
-5. Atualize o `classify_documents.py` para incluir o novo agente
+1. **Definir Enum e Modelos** em `agents.py`:
+
+```python
+class NovoTipoDocumento(str, Enum):
+    TIPO_A = "TIPO_A"
+    TIPO_B = "TIPO_B"
+
+class MetadadosNovoDocumento(BaseModel):
+    campo1: str
+    campo2: float
+
+class NovoDocumentoOutput(BaseModel):
+    # ... campos padrão
+    tipo_documento: NovoTipoDocumento
+    metadados_documento: MetadadosNovoDocumento
+```
+
+2. **Criar Prompt** em `prompts/novo_documento_prompt.md`
+
+3. **Criar Agente** em `agents.py`:
+
+```python
+novo_documento_agent = Agent(
+    "gemini-2.5-flash",
+    output_type=NovoDocumentoOutput | ErrorOutput,
+    system_prompt=load_markdown("novo_documento_prompt.md"),
+)
+```
+
+4. **Adicionar ao fluxo** em `classify_document()`
+
+## 📝 Dependências Principais
+
+- **pydantic** (>=2.0.0): Validação de dados e schemas
+- **pydantic-ai** (>=0.0.14): Framework de agentes IA
+- **google-genai** (>=1.17.0): Integração com Google Gemini
+- **click** (>=8.0.0): Interface de linha de comando
+- **rich** (>=13.0.0): Output formatado no terminal
 
 ## 📝 Licença
 
@@ -258,31 +432,19 @@ Este projeto está licenciado sob a Licença Apache 2.0 - veja o arquivo [LICENS
 
 Contribuições são bem-vindas! Para contribuir:
 
-### Configuração para Desenvolvimento
-
-```bash
-git clone https://github.com/kindalus/agentic_document_classifier.git
-cd agentic_document_classifier
-pip install -e ".[dev]"
-pre-commit install
-```
-
-### Processo de Contribuição
-
 1. Faça fork do repositório
 2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
 3. Faça commit das suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
 4. Execute os testes (`pytest`)
-5. Execute as verificações de qualidade (`black src tests && isort src tests && flake8 src`)
-6. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
-7. Abra um Pull Request
+5. Faça push para a branch (`git push origin feature/nova-funcionalidade`)
+6. Abra um Pull Request
 
 ### Padrões de Código
 
 - Usamos `black` para formatação de código
 - `isort` para organização de imports
 - `flake8` para verificação de estilo
-- `mypy` para verificação de tipos
+- `mypy` para verificação de tipos (configuração permissiva)
 - `pytest` para testes
 
 ## 📞 Suporte
@@ -291,5 +453,14 @@ Para questões ou suporte:
 
 - 🐛 **Bugs**: [Criar issue](https://github.com/kindalus/agentic_document_classifier/issues)
 - 💡 **Feature Requests**: [Discussões](https://github.com/kindalus/agentic_document_classifier/discussions)
-- 📖 **Documentação**: [Wiki](https://github.com/kindalus/agentic_document_classifier/wiki)
-- 💬 **Chat**: [Discord/Slack community link]
+- 📖 **Documentação**: Veja a pasta [docs/](docs/)
+
+## 🗺️ Roadmap
+
+- [ ] Testes unitários e de integração
+- [ ] Suporte a mais formatos de documento (DOCX, imagens)
+- [ ] Interface web para classificação
+- [ ] API REST
+- [ ] Suporte a mais modelos LLM (Anthropic Claude, OpenAI)
+- [ ] Melhorias de performance e cache
+- [ ] Documentação API completa

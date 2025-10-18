@@ -6,11 +6,11 @@ Before installing the Agentic Document Classifier, ensure you have the following
 
 - **Python 3.8+**: The package requires Python 3.8 or higher
 - **Google AI API Key**: You'll need access to Google AI Studio with an API key
-- **PDF Processing**: The system processes PDF documents
+- **PDF Support**: The system processes PDF documents
 
 ## Installation Methods
 
-### 1. Install from PyPI (Recommended)
+### 1. Install from PyPI (When Published)
 
 Once published to PyPI, you can install the package using pip:
 
@@ -18,7 +18,15 @@ Once published to PyPI, you can install the package using pip:
 pip install agentic_document_classifier
 ```
 
-### 2. Install from Source
+### 2. Install from GitHub
+
+You can install directly from GitHub without cloning:
+
+```bash
+pip install git+https://github.com/kindalus/agentic_document_classifier.git
+```
+
+### 3. Install from Source
 
 #### Clone the Repository
 
@@ -27,40 +35,24 @@ git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
 ```
 
-#### Install in Development Mode
+#### Install Dependencies
 
-For development or if you want to modify the code:
+For production use:
 
 ```bash
-pip install -e .
+pip install -r requirements.txt
 ```
-
-#### Install with Optional Dependencies
 
 For development with all tools:
 
 ```bash
-pip install -e ".[dev]"
+pip install -r requirements-dev.txt
 ```
 
-For documentation building:
+#### Install Package in Development Mode
 
 ```bash
-pip install -e ".[docs]"
-```
-
-For testing only:
-
-```bash
-pip install -e ".[test]"
-```
-
-### 3. Install from GitHub
-
-You can install directly from GitHub without cloning:
-
-```bash
-pip install git+https://github.com/kindalus/agentic_document_classifier.git
+pip install -e .
 ```
 
 ## Environment Setup
@@ -75,10 +67,23 @@ Set your Google AI API key as an environment variable:
 export GOOGLE_API_KEY="your_api_key_here"
 ```
 
+To make it permanent, add to your `~/.bashrc`, `~/.zshrc`, or `~/.profile`:
+
+```bash
+echo 'export GOOGLE_API_KEY="your_api_key_here"' >> ~/.bashrc
+source ~/.bashrc
+```
+
 #### Windows (Command Prompt)
 
 ```cmd
 set GOOGLE_API_KEY=your_api_key_here
+```
+
+For permanent setting:
+
+```cmd
+setx GOOGLE_API_KEY "your_api_key_here"
 ```
 
 #### Windows (PowerShell)
@@ -87,12 +92,25 @@ set GOOGLE_API_KEY=your_api_key_here
 $env:GOOGLE_API_KEY="your_api_key_here"
 ```
 
+For permanent setting:
+
+```powershell
+[System.Environment]::SetEnvironmentVariable('GOOGLE_API_KEY','your_api_key_here','User')
+```
+
 #### Using .env File
 
 Create a `.env` file in your project directory:
 
 ```bash
 echo "GOOGLE_API_KEY=your_api_key_here" > .env
+```
+
+Then load it in your Python code:
+
+```python
+from dotenv import load_dotenv
+load_dotenv()
 ```
 
 ### 2. Verify Installation
@@ -109,11 +127,89 @@ Or test the CLI tools:
 agentic-classify --help
 ```
 
-## Docker Installation
+Expected output:
+
+```
+Usage: agentic-classify [OPTIONS] FILES...
+
+Classify business documents using AI agents
+
+Options:
+  --processes INTEGER  Number of parallel processes (default: 4)
+  --output TEXT       Output file for results (JSON format)
+  --verbose           Enable verbose output
+  --help             Show this message and exit.
+```
+
+## Dependencies
+
+### Core Dependencies
+
+The package requires:
+
+- **pydantic** (>=2.0.0): Data validation and schemas
+- **pydantic-ai** (>=0.0.14): AI agent framework
+- **google-genai** (>=1.17.0): Google Gemini integration
+- **click** (>=8.0.0): CLI interface
+- **rich** (>=13.0.0): Terminal formatting
+
+### Development Dependencies
+
+For development, additional packages are needed:
+
+- **pytest** (>=7.0.0): Testing framework
+- **black** (>=23.0.0): Code formatter
+- **isort** (>=5.12.0): Import sorter
+- **flake8** (>=6.0.0): Linter
+- **mypy** (>=1.0.0): Type checker
+- **pre-commit** (>=3.0.0): Git hooks
+- **sphinx** (>=6.0.0): Documentation generator
+
+## Virtual Environment Setup
+
+### Using venv (Recommended)
+
+```bash
+# Create virtual environment
+python -m venv agentic-env
+
+# Activate on Linux/macOS
+source agentic-env/bin/activate
+
+# Activate on Windows
+agentic-env\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Using conda
+
+```bash
+conda create -n agentic-env python=3.11
+conda activate agentic-env
+pip install -r requirements.txt
+```
+
+### Using pipenv
+
+```bash
+pipenv install -r requirements.txt
+pipenv shell
+```
+
+### Using poetry
+
+```bash
+poetry install
+poetry shell
+```
+
+## Docker Installation (Optional)
 
 ### Using Docker
 
-Create a Dockerfile:
+Create a `Dockerfile`:
 
 ```dockerfile
 FROM python:3.11-slim
@@ -132,11 +228,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application
 COPY . .
 
-# Install the package
-RUN pip install .
-
 # Set environment variable
 ENV GOOGLE_API_KEY=""
+
+# Install the package
+RUN pip install -e .
 
 CMD ["agentic-classify", "--help"]
 ```
@@ -145,7 +241,7 @@ Build and run:
 
 ```bash
 docker build -t agentic_document_classifier .
-docker run -e GOOGLE_API_KEY="your_api_key" agentic_document_classifier
+docker run -e GOOGLE_API_KEY="your_api_key" -v $(pwd)/documents:/app/documents agentic_document_classifier agentic-classify /app/documents/*.pdf
 ```
 
 ### Using Docker Compose
@@ -162,41 +258,15 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
       - ./documents:/app/documents
-    command: agentic-classify /app/documents/*.pdf
+      - ./results:/app/results
+    command: agentic-classify --output /app/results/output.json /app/documents/*.pdf
 ```
 
 Run with:
 
 ```bash
+export GOOGLE_API_KEY="your_api_key"
 docker-compose up
-```
-
-## Virtual Environment Setup
-
-### Using venv
-
-```bash
-python -m venv agentic-env
-source agentic-env/bin/activate  # Linux/macOS
-# or
-agentic-env\Scripts\activate  # Windows
-
-pip install agentic_document_classifier
-```
-
-### Using conda
-
-```bash
-conda create -n agentic-env python=3.11
-conda activate agentic-env
-pip install agentic_document_classifier
-```
-
-### Using pipenv
-
-```bash
-pipenv install agentic_document_classifier
-pipenv shell
 ```
 
 ## Development Installation
@@ -215,7 +285,8 @@ source dev-env/bin/activate  # Linux/macOS
 # or dev-env\Scripts\activate  # Windows
 
 # Install in development mode with all dependencies
-pip install -e ".[dev]"
+pip install -r requirements-dev.txt
+pip install -e .
 ```
 
 ### 2. Install Pre-commit Hooks
@@ -223,6 +294,8 @@ pip install -e ".[dev]"
 ```bash
 pre-commit install
 ```
+
+This will run code quality checks before each commit.
 
 ### 3. Run Tests
 
@@ -234,6 +307,7 @@ pytest
 
 ```bash
 cd docs
+pip install sphinx sphinx-rtd-theme myst-parser
 sphinx-build -b html . _build
 ```
 
@@ -245,21 +319,47 @@ sphinx-build -b html . _build
 
 - Ensure the package is installed: `pip list | grep agentic`
 - If using development mode, ensure you're in the correct virtual environment
+- Try reinstalling: `pip install -e .`
+
+#### ImportError: No module named 'pydantic_ai'
+
+- Install all dependencies: `pip install -r requirements.txt`
+- Verify pydantic-ai is installed: `pip show pydantic-ai`
 
 #### API Key Not Found
 
-- Verify the environment variable is set: `echo $GOOGLE_API_KEY`
+```
+Error: GOOGLE_API_KEY environment variable not set
+```
+
+- Verify the environment variable is set: `echo $GOOGLE_API_KEY` (Linux/macOS) or `echo %GOOGLE_API_KEY%` (Windows)
 - Ensure the API key is valid and has access to Google AI services
+- Try setting it in the current session: `export GOOGLE_API_KEY="your_key"`
 
 #### PDF Processing Errors
 
-- Ensure PyPDF2 is installed: `pip install PyPDF2>=3.0.0`
-- Verify PDF files are not corrupted or password-protected
+- Ensure PDFs are not corrupted or password-protected
+- Try opening the PDF in a viewer to verify it's valid
+- Check file permissions
 
 #### Permission Errors
 
-- On Linux/macOS, you might need to use `sudo` for system-wide installation
+- On Linux/macOS, you might need to use `sudo` for system-wide installation (not recommended)
 - Consider using virtual environments to avoid permission issues
+- Use `pip install --user` for user-level installation
+
+#### Version Conflicts
+
+```
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed
+```
+
+Solution:
+
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt --upgrade
+```
 
 ### Getting Help
 
@@ -272,6 +372,33 @@ If you encounter issues:
    - Your operating system
    - Complete error messages
    - Steps to reproduce the issue
+   - Output of `pip list`
+
+## Platform-Specific Notes
+
+### macOS
+
+If you encounter SSL certificate errors:
+
+```bash
+/Applications/Python\ 3.x/Install\ Certificates.command
+```
+
+### Linux
+
+Some distributions may require additional packages:
+
+```bash
+# Ubuntu/Debian
+sudo apt-get install python3-dev
+
+# Fedora/RHEL
+sudo dnf install python3-devel
+```
+
+### Windows
+
+Ensure you have Microsoft Visual C++ 14.0 or greater installed for some dependencies.
 
 ## Next Steps
 
@@ -279,5 +406,5 @@ After installation:
 
 1. Read the [Quick Start Guide](quickstart.md)
 2. Check out the [Examples](../examples/)
-3. Review the [API Documentation](api.md)
-4. Join our community discussions
+3. Review the main [README](../README.md)
+4. Explore the [prompts](../src/agentic_document_classifier/prompts/)
