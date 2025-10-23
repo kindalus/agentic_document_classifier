@@ -911,7 +911,7 @@ ocr_agent = Agent(
 )
 
 triage_agent = Agent(
-    "gemini-2.5-flash",
+    "gemini-2.5-pro",
     deps_type=DocumentPath,
     output_type=TriageOutput | ErrorOutput,
     system_prompt=load_markdown("triage_prompt.md"),
@@ -1152,14 +1152,14 @@ def classify_document(
                 usage=result.usage(),
             )
         else:
-            print(f"Model usage: \n{result.usage()}")
+            # print(f"Model usage: \n{result.usage()}")
             return output
 
-        print(f"Model usage: \n{result.usage()}")
+        # print(f"Model usage: \n{result.usage()}")
         return result.output
 
     except Exception as e:
-        print(f"Model usage: \n{usage}")  # pyright: ignore[reportPossiblyUnboundVariable]
+        print(f"Model usage: \n{usage}")
 
         return ErrorOutput(
             localizacao_ficheiro=path, erro=f"Classification error: {str(e)}"
