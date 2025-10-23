@@ -911,7 +911,7 @@ ocr_agent = Agent(
 )
 
 triage_agent = Agent(
-    "gemini-2.5-pro",
+    "gemini-2.5-flash",
     deps_type=DocumentPath,
     output_type=TriageOutput | ErrorOutput,
     system_prompt=load_markdown("triage_prompt.md"),
