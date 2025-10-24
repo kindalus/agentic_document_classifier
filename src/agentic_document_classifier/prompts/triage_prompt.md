@@ -36,6 +36,7 @@ Este grupo engloba documentos que formalizam transacções de compra e venda de 
   - **Palavras-chave:** "Factura", "Recibo", "Nota de Crédito", "Pró-Forma", "Fornecedor", "Cliente", "NIF", "Descrição", "Quantidade", "Preço Unit.", "IVA", "Total".
   - **Estrutura:** Identificam claramente um fornecedor e um cliente com os seus dados (nome, NIF, morada). Contêm uma secção, geralmente em formato de tabela, que detalha produtos ou serviços com quantidades, preços e impostos. Apresentam um cálculo claro de subtotais, impostos e valor total.
   - **Informações Adicionais Comuns:** Número do documento, data de emissão, data de vencimento, informações sobre software de facturação (ex: "Processado por programa certificado"), e referências a documentos relacionados. As Facturas-Recibo e Recibos confirmam o pagamento, mencionando métodos como "Multicaixa" ou "Transferência".
+  - **Importante:** Algumas facturas são emitidas usando o Portal do Contribuinte, geralmente o seu número começa com "FTM", nesse caso **são sempre documentos comerciais**.
 
 ### Documentos Aduaneiros
 
