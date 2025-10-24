@@ -23,20 +23,37 @@ A seguir a tua tarefa é analisar o **conteúdo em formato Markdown** de um dado
 
 Aqui estão as descrições de cada grupo de documentos a considerar:
 
+## Regras Críticas de Classificação
+
+**ATENÇÃO:** Antes de classificar qualquer documento, leia estas regras:
+
+1. **Facturas NÃO são Documentos Fiscais**: Todas as facturas (incluindo FT, FTM, Factura-Recibo, Nota de Crédito) emitidas por empresas privadas são **SEMPRE DOCUMENTOS COMERCIAIS**, mesmo que mencionem impostos como IVA ou que sejam emitidas através do Portal do Contribuinte da AGT.
+
+2. **Documentos Fiscais**: São APENAS documentos emitidos PELA autoridade fiscal (AGT) ou segurança social (INSS) para cobrar impostos ou contribuições. Exemplos: Nota de Liquidação emitida pela AGT, Guia de Pagamento INSS.
+
+3. **Diferença Chave**:
+   - **Documento Comercial (Factura)**: Empresa A cobra de Empresa B por produtos/serviços
+   - **Documento Fiscal**: AGT/INSS cobra de uma empresa por impostos/contribuições
+
 ## Análise de Grupos de Documentos Empresariais
 
 Procedo à descrição das características textuais e estruturais de cada grupo de documentos. Documentos que não sejam abrangidos pelas descrições abaixo deverão ser classificados como "Outros Documentos". Se um documento parecer enquadrar-se em mais de uma categoria, classifique-o na categoria que representa o seu propósito principal ou a entidade emissora mais proeminente com base no seu conteúdo.
 
 ### Documentos Comerciais
 
-Este grupo engloba documentos que formalizam transacções de compra e venda de bens ou prestação de serviços.
+Este grupo engloba documentos que formalizam transacções de compra e venda de bens ou prestação de serviços **entre entidades privadas** (empresas, particulares).
 
-- **Tipos Incluídos:** Factura, Factura-Recibo, Factura Global, Factura Pró-Forma, Nota de Crédito.
+- **Tipos Incluídos:** Factura (FT, FTM, FR), Factura-Recibo, Factura Global, Factura Pró-Forma, Nota de Crédito (NC).
 - **Características de Conteúdo:**
   - **Palavras-chave:** "Factura", "Recibo", "Nota de Crédito", "Pró-Forma", "Fornecedor", "Cliente", "NIF", "Descrição", "Quantidade", "Preço Unit.", "IVA", "Total".
   - **Estrutura:** Identificam claramente um fornecedor e um cliente com os seus dados (nome, NIF, morada). Contêm uma secção, geralmente em formato de tabela, que detalha produtos ou serviços com quantidades, preços e impostos. Apresentam um cálculo claro de subtotais, impostos e valor total.
   - **Informações Adicionais Comuns:** Número do documento, data de emissão, data de vencimento, informações sobre software de facturação (ex: "Processado por programa certificado"), e referências a documentos relacionados. As Facturas-Recibo e Recibos confirmam o pagamento, mencionando métodos como "Multicaixa" ou "Transferência".
-  - **Importante:** Algumas facturas são emitidas usando o Portal do Contribuinte, geralmente o seu número começa com "FTM", nesse caso **são sempre documentos comerciais**.
+  - **Entidade Emissora:** Empresa privada (fornecedor) que vende produtos ou serviços.
+  - **Entidade Destinatária:** Outra empresa ou particular (cliente) que compra produtos ou serviços.
+- **CRÍTICO:**
+  - **TODAS as facturas são documentos comerciais**, incluindo as emitidas através do Portal do Contribuinte (números FTM).
+  - O facto de uma factura mencionar IVA, impostos ou a AGT **NÃO a torna um documento fiscal**.
+  - Se o documento é uma factura emitida por uma empresa a um cliente, é **SEMPRE comercial**.
 
 ### Documentos Aduaneiros
 
@@ -62,14 +79,20 @@ Estes documentos são cruciais para o movimento físico das mercadorias.
 
 ### Documentos Fiscais
 
-Estes documentos relacionam-se com o apuramento e pagamento de impostos e contribuições.
+Estes documentos relacionam-se com o apuramento e pagamento de impostos e contribuições **emitidos PELA autoridade fiscal ou segurança social**.
 
-- **Tipos Incluídos:** Nota de Liquidação (AGT - para IRT, Imposto Industrial, IVA), Guia de Pagamento INSS, Mapa de Retenções de Impostos.
+- **Tipos Incluídos:** Nota de Liquidação AGT (para IRT, Imposto Industrial, IVA devidos à AGT), Guia de Pagamento INSS, Mapa de Retenções de Impostos.
 - **Características de Conteúdo:**
-  - **Palavras-chave:** "Nota de Liquidação", "Imposto", "Contribuições", "Período de Referência", "Base de Incidência", "Taxa", "Valor a Pagar", "Referência para Pagamento", "RUPE".
-  - **Estrutura:** Documentos oficiais e estruturados que detalham o cálculo de um imposto ou contribuição específica. As guias de pagamento contêm referências únicas (RUPE) para a sua liquidação.
-- **Diferenciação:** Caracterizam-se pela sua natureza impositiva, com clara identificação da autoridade fiscal ou de segurança social e o foco no cálculo e cobrança de obrigações tributárias.
-- **Importante:** Nunca classficiar `Notas de Crédito` como documementos Fiscais.
+  - **Palavras-chave:** "Nota de Liquidação AGT", "Administração Geral Tributária", "Imposto devido", "Contribuições INSS", "Período de Referência", "Base de Incidência", "Taxa", "Valor a Pagar ao Estado", "Referência para Pagamento", "RUPE".
+  - **Estrutura:** Documentos oficiais emitidos por entidades governamentais (AGT/INSS) que detalham o cálculo de impostos ou contribuições devidas pelo contribuinte ao Estado. As guias de pagamento contêm referências únicas (RUPE) para liquidação junto do Estado.
+  - **Entidade Emissora:** **AGT** (Administração Geral Tributária) ou **INSS** (Instituto Nacional de Segurança Social).
+  - **Entidade Destinatária:** Empresa ou particular que deve pagar impostos/contribuições ao Estado.
+  - **Propósito:** Cobrança de impostos ou contribuições pelo Estado.
+- **CRÍTICO - Diferenciação de Facturas:**
+  - **Documentos Fiscais**: Emitidos pela **AGT ou INSS** cobrando impostos/contribuições.
+  - **Facturas Comerciais**: Emitidas por **empresas privadas** vendendo produtos/serviços (mesmo que mencionem IVA ou Portal do Contribuinte).
+  - **NUNCA classificar Facturas, Facturas-Recibo ou Notas de Crédito como Documentos Fiscais**.
+  - Pergunte sempre: "Quem emite este documento?" Se for uma empresa privada (não AGT/INSS), é comercial, não fiscal.
 
 ### Documentos Bancários
 
@@ -130,29 +153,42 @@ Deves fornecer a tua resposta em formato JSON, contendo os seguintes campos:
 
 ### Exemplos de Saída
 
-**Exemplo 1:**
+**Exemplo 1 - Factura Comercial (emitida por empresa privada):**
 
 ```json
 {
-  "localizacao_original": "/tmp/file.pdf",
+  "localizacao_original": "/tmp/factura_empresa.pdf",
   "grupo_documento": "DOCUMENTOS_COMERCIAIS",
-  "numero_documento": "FT 01P2024/5678",
+  "numero_documento": "FTM 2024/001234",
   "data_emissao": "2024-10-26",
   "hora_emissao": "15:45",
-  "notas_triagem": "O documento contém os termos 'Factura', 'Fornecedor', 'Cliente' e uma lista detalhada de produtos com preços e IVA, características típicas de um documento comercial.",
-  "conteudo": "# Factura\n\n**Fornecedor:** Empresa ABC\n**Cliente:** Cliente XYZ\n\n| Item | Qtd | Preço |\n|---|---|---|\n| Produto A | 2 | 100,00 |\n..."
+  "notas_triagem": "Factura emitida pela empresa ABC Lda (fornecedor) para a empresa XYZ SA (cliente) pela venda de produtos. Contém lista de produtos, preços e IVA. Emitida através do Portal do Contribuinte (número FTM), mas é uma transacção comercial entre entidades privadas, logo é um documento comercial.",
+  "conteudo": "# Factura FTM 2024/001234\n\n**Fornecedor:** ABC Lda\n**Cliente:** XYZ SA\n\n| Item | Qtd | Preço |\n|---|---|---|\n| Produto A | 2 | 100,00 |\n..."
 }
 ```
 
-**Exemplo 2:**
+**Exemplo 2 - Nota de Liquidação da AGT (Documento Fiscal):**
 
 ```json
 {
-  "localizacao_original": "/tmp/file_1.pdf",
+  "localizacao_original": "/tmp/liquidacao_agt.pdf",
+  "grupo_documento": "DOCUMENTOS_FISCAIS",
+  "numero_documento": "NL2024/98765",
+  "data_emissao": "2024-10-15",
+  "notas_triagem": "Nota de Liquidação emitida pela Administração Geral Tributária (AGT) à empresa XYZ SA para cobrança de IVA devido ao Estado. Documento oficial do Estado cobrando impostos, não uma transacção comercial entre empresas.",
+  "conteudo": "# Nota de Liquidação AGT\n\n**Entidade Emissora:** AGT - Administração Geral Tributária\n**Contribuinte:** XYZ SA\n\nImposto: IVA\nPeríodo: Janeiro 2024\nValor a Pagar: 150.000,00 AOA\nRUPE: 123456789..."
+}
+```
+
+**Exemplo 3 - Declaração Aduaneira:**
+
+```json
+{
+  "localizacao_original": "/tmp/declaracao.pdf",
   "grupo_documento": "DOCUMENTOS_ADUANEIROS",
   "numero_documento": "AOIM0485961",
   "data_emissao": "2025-01-15",
-  "notas_triagem": "Documento que menciona a 'AGT' e o sistema 'ASYCUDAWorld', com campos numerados e terminologia de importação como 'Consignatário' e 'Direitos Aduaneiros'.",
+  "notas_triagem": "Declaração aduaneira processada no sistema ASYCUDAWorld com campos numerados e terminologia de importação como 'Consignatário' e 'Direitos Aduaneiros'.",
   "conteudo": "# REPÚBLICA DE ANGOLA\n\n**DECLARAÇÃO ADUANEIRA**\n\n1. Importador: Empresa Y\n8. Consignatário: Empresa Y\n..."
 }
 ```
