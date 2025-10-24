@@ -29,11 +29,13 @@ Aqui estão as descrições de cada grupo de documentos a considerar:
 
 1. **Facturas NÃO são Documentos Fiscais**: Todas as facturas (incluindo FT, FTM, Factura-Recibo, Nota de Crédito) emitidas por empresas privadas são **SEMPRE DOCUMENTOS COMERCIAIS**, mesmo que mencionem impostos como IVA ou que sejam emitidas através do Portal do Contribuinte da AGT.
 
-2. **Documentos Fiscais**: São APENAS documentos emitidos PELA autoridade fiscal (AGT) ou segurança social (INSS) para cobrar impostos ou contribuições. Exemplos: Nota de Liquidação emitida pela AGT, Guia de Pagamento INSS.
+2. **Portal do Contribuinte = Documento Comercial**: Quando uma factura é emitida através do Portal do Contribuinte da AGT (números que geralmente começam com "FTM"), **é SEMPRE um documento comercial**. O Portal do Contribuinte é apenas uma ferramenta de registo fiscal para empresas privadas emitirem as suas facturas. A empresa privada continua a ser o emissor, logo o documento é comercial.
 
-3. **Diferença Chave**:
-   - **Documento Comercial (Factura)**: Empresa A cobra de Empresa B por produtos/serviços
-   - **Documento Fiscal**: AGT/INSS cobra de uma empresa por impostos/contribuições
+3. **Documentos Fiscais - Apenas AGT e INSS**: São APENAS documentos emitidos PELA autoridade fiscal (AGT) ou segurança social (INSS) para cobrar impostos ou contribuições directamente ao contribuinte. Exemplos: Nota de Liquidação emitida pela AGT, Guia de Pagamento INSS.
+
+4. **Diferença Chave - Quem Emite?**:
+   - **Documento Comercial (Factura)**: Emitido por **Empresa Privada** (através do portal ou não) cobrando de um cliente por produtos/serviços
+   - **Documento Fiscal**: Emitido pela **AGT ou INSS** cobrando de um contribuinte por impostos/contribuições ao Estado
 
 ## Análise de Grupos de Documentos Empresariais
 
@@ -48,10 +50,11 @@ Este grupo engloba documentos que formalizam transacções de compra e venda de 
   - **Palavras-chave:** "Factura", "Recibo", "Nota de Crédito", "Pró-Forma", "Fornecedor", "Cliente", "NIF", "Descrição", "Quantidade", "Preço Unit.", "IVA", "Total".
   - **Estrutura:** Identificam claramente um fornecedor e um cliente com os seus dados (nome, NIF, morada). Contêm uma secção, geralmente em formato de tabela, que detalha produtos ou serviços com quantidades, preços e impostos. Apresentam um cálculo claro de subtotais, impostos e valor total.
   - **Informações Adicionais Comuns:** Número do documento, data de emissão, data de vencimento, informações sobre software de facturação (ex: "Processado por programa certificado"), e referências a documentos relacionados. As Facturas-Recibo e Recibos confirmam o pagamento, mencionando métodos como "Multicaixa" ou "Transferência".
-  - **Entidade Emissora:** Empresa privada (fornecedor) que vende produtos ou serviços.
+  - **Entidades Emissoras:** Empresas privadas (fornecedores) que vendem produtos ou serviços. Exemplos: "ABC Comércio, Lda", "XYZ Serviços, SA", "João Silva - Comerciante", "Empresa de Transportes ABC". **NUNCA são AGT ou INSS**.
   - **Entidade Destinatária:** Outra empresa ou particular (cliente) que compra produtos ou serviços.
 - **CRÍTICO:**
   - **TODAS as facturas são documentos comerciais**, incluindo as emitidas através do Portal do Contribuinte (números FTM).
+  - **Portal do Contribuinte**: É apenas uma ferramenta onde empresas privadas registam as suas facturas. A empresa privada é o emissor real, logo o documento é comercial.
   - O facto de uma factura mencionar IVA, impostos ou a AGT **NÃO a torna um documento fiscal**.
   - Se o documento é uma factura emitida por uma empresa a um cliente, é **SEMPRE comercial**.
 
@@ -85,9 +88,9 @@ Estes documentos relacionam-se com o apuramento e pagamento de impostos e contri
 - **Características de Conteúdo:**
   - **Palavras-chave:** "Nota de Liquidação AGT", "Administração Geral Tributária", "Imposto devido", "Contribuições INSS", "Período de Referência", "Base de Incidência", "Taxa", "Valor a Pagar ao Estado", "Referência para Pagamento", "RUPE".
   - **Estrutura:** Documentos oficiais emitidos por entidades governamentais (AGT/INSS) que detalham o cálculo de impostos ou contribuições devidas pelo contribuinte ao Estado. As guias de pagamento contêm referências únicas (RUPE) para liquidação junto do Estado.
-  - **Entidade Emissora:** **AGT** (Administração Geral Tributária) ou **INSS** (Instituto Nacional de Segurança Social).
-  - **Entidade Destinatária:** Empresa ou particular que deve pagar impostos/contribuições ao Estado.
-  - **Propósito:** Cobrança de impostos ou contribuições pelo Estado.
+  - **Entidades Emissoras:** **APENAS AGT** (Administração Geral Tributária) ou **INSS** (Instituto Nacional de Segurança Social). São entidades governamentais angolanas. **Se o emissor não for AGT ou INSS, NÃO é documento fiscal**.
+  - **Entidade Destinatária:** Empresa ou particular (contribuinte) que deve pagar impostos/contribuições ao Estado.
+  - **Propósito:** Cobrança de impostos ou contribuições pelo Estado angolano.
 - **CRÍTICO - Diferenciação de Facturas:**
   - **Documentos Fiscais**: Emitidos pela **AGT ou INSS** cobrando impostos/contribuições.
   - **Facturas Comerciais**: Emitidas por **empresas privadas** vendendo produtos/serviços (mesmo que mencionem IVA ou Portal do Contribuinte).
