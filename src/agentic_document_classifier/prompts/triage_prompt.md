@@ -44,7 +44,6 @@ Este grupo de documentos é essencial para o processo de importação e exporta�
 - **Tipos Incluídos:** Documento Único Provisório, Nota de Liquidação (Assessment Notice), Nota de Desalfandegamento, Declaração Aduaneira.
 - **Características de Conteúdo:**
   - **Palavras-chave:** "Declaração", "Importador", "Consignatário", "Exportador", "Despachante", "Alfândega", "Direitos Aduaneiros", "Código Pautal", "FOB", "CIF", "Manifesto", "Conhecimento de Embarque", "BL", "AWB".
-  - **Entidades Emissoras:** Mencionam explicitamente autoridades como "AGT - Administração Geral Tributária" ou sistemas como "ASYCUDAWorld". O nome "República de Angola" é frequentemente proeminente.
   - **Estrutura:** Apresentam um formato de formulário padronizado, muitas vezes com campos numerados e secções bem definidas. Detalham mercadorias, pesos, valores e o cálculo detalhado de impostos e taxas de importação.
 - **Diferenciação:** Distinguem-se pela terminologia de comércio internacional e pela menção explícita a entidades governamentais aduaneiras. O seu propósito é a regulação e tributação da entrada/saída de mercadorias, não uma simples venda.
 
@@ -58,6 +57,7 @@ Estes documentos são cruciais para o movimento físico das mercadorias.
   - **Entidades Emissoras:** Mencionam nomes de companhias de transporte aéreo ou marítimo (ex: TAAG, Hapag-Lloyd, CMA CGM, MSC).
   - **Estrutura:** Frequentemente seguem padrões internacionais com campos específicos para os detalhes do transporte. Incluem secções com termos e condições do contrato de transporte. Uma "Packing List" é essencialmente uma lista detalhada do conteúdo de cada embalagem.
 - **Diferenciação:** Identificáveis pelos nomes das transportadoras e pela terminologia específica de logística e transporte. O foco é o contrato de transporte e a descrição da carga para movimentação.
+- **Imporante:** Documentos comerciais como facturas, podem mencionar cartas de porte (AWB ou BL) no sentido de cobrar o frete, nesse caso **não são documentos de frete**, mas sim documentos comerciais.
 
 ### Documentos Fiscais
 
@@ -66,9 +66,9 @@ Estes documentos relacionam-se com o apuramento e pagamento de impostos e contri
 - **Tipos Incluídos:** Nota de Liquidação (AGT - para IRT, Imposto Industrial, IVA), Guia de Pagamento INSS, Mapa de Retenções de Impostos.
 - **Características de Conteúdo:**
   - **Palavras-chave:** "Nota de Liquidação", "Imposto", "Contribuições", "Período de Referência", "Base de Incidência", "Taxa", "Valor a Pagar", "Referência para Pagamento", "RUPE".
-  - **Entidades Emissoras:** Emitidos ou referem-se directamente a autoridades fiscais como "AGT - Administração Geral Tributária" ou "INSS - Instituto Nacional de Segurança Social".
   - **Estrutura:** Documentos oficiais e estruturados que detalham o cálculo de um imposto ou contribuição específica. As guias de pagamento contêm referências únicas (RUPE) para a sua liquidação.
 - **Diferenciação:** Caracterizam-se pela sua natureza impositiva, com clara identificação da autoridade fiscal ou de segurança social e o foco no cálculo e cobrança de obrigações tributárias.
+- **Importante:** Nunca classficiar `Notas de Crédito` como documementos Fiscais.
 
 ### Documentos Bancários
 
