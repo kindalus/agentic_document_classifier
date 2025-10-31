@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "agentic_document_classifier"
 version = "0.3.6"
 description = "Intelligent document classification system using AI agents based on Google Gemini and Pydantic AI"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Agentic Document Classifier Team" }]
 maintainers = [{ name = "Agentic Document Classifier Team" }]
@@ -29,7 +29,6 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -70,19 +69,12 @@ Changelog = "https://github.com/kindalus/agentic_document_classifier/blob/main/C
 [project.scripts]
 agentic-classify = "agentic_document_classifier.cli.classify_documents:main"
 
-[tool.setuptools]
-package-dir = { "" = "src" }
-
-[tool.setuptools.packages.find]
-where = ["src"]
-include = ["agentic_document_classifier*"]
-
-[tool.setuptools.package-data]
-"agentic_document_classifier.prompts" = ["*.md"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentic_document_classifier"]
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py39']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -105,7 +97,7 @@ line_length = 88
 known_first_party = ["agentic_document_classifier"]
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true

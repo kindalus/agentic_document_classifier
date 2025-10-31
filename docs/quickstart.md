@@ -3,8 +3,18 @@
 ## Installation
 
 ```bash
+# With uv (recommended)
+uv pip install agentic_document_classifier
+
+# Or with pip
 pip install agentic_document_classifier
-# or from source
+
+# Or from source with uv
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
+uv sync
+
+# Or from source with pip
 pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
@@ -23,19 +33,29 @@ export GOOGLE_API_KEY="your_api_key_here"
 Classify a single document:
 
 ```bash
+# If virtual environment is activated
 agentic-classify documento.pdf
+
+# Or using uv run (without activating environment)
+uv run agentic-classify documento.pdf
 ```
 
 Classify multiple documents:
 
 ```bash
 agentic-classify *.pdf
+
+# Or with uv
+uv run agentic-classify *.pdf
 ```
 
 With custom settings:
 
 ```bash
 agentic-classify --processes 8 --output results.json documents/*.pdf
+
+# Or with uv
+uv run agentic-classify --processes 8 --output results.json documents/*.pdf
 ```
 
 ### Python API

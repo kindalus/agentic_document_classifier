@@ -56,8 +56,28 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 
 ### Pré-requisitos
 
-- Python 3.8+
+- Python 3.9+
 - Conta Google AI Studio com API key
+- [uv](https://docs.astral.sh/uv/) (recomendado para gestão de dependências)
+
+### Instalação via uv (Recomendado)
+
+```bash
+# Instalar uv (se ainda não tiver)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clonar o repositório
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
+
+# Instalar dependências e criar ambiente virtual
+uv sync
+
+# Activar o ambiente virtual
+source .venv/bin/activate  # Linux/macOS
+# ou
+.venv\Scripts\activate  # Windows
+```
 
 ### Instalação via pip
 
@@ -72,9 +92,12 @@ pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```bash
 git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
-pip install -r requirements.txt
-# ou para desenvolvimento completo
-pip install -r requirements-dev.txt
+
+# Com uv (recomendado)
+uv sync --all-extras
+
+# Ou com pip
+pip install -e ".[dev]"
 ```
 
 ### Configuração da API
@@ -94,6 +117,9 @@ export GOOGLE_API_KEY="sua_chave_aqui"
 ```bash
 # Classificar um único documento
 agentic-classify documento.pdf
+
+# Ou usando uv run (sem activar o ambiente virtual)
+uv run agentic-classify documento.pdf
 
 # Classificar múltiplos documentos
 agentic-classify documento1.pdf documento2.pdf documento3.pdf
@@ -360,25 +386,32 @@ DEBUG = True  # Mostra outputs intermediários
 ```bash
 git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
-pip install -r requirements-dev.txt
+
+# Com uv (recomendado)
+uv sync --all-extras
+
+# Ou com pip
+pip install -e ".[dev]"
 ```
 
 ### Estrutura de Desenvolvimento
 
 ```bash
 # Executar testes
+uv run pytest
+# ou (se ambiente activado)
 pytest
 
 # Formatação de código
-black src tests
-isort src tests
+uv run black src tests
+uv run isort src tests
 
 # Linting
-flake8 src
-mypy src
+uv run flake8 src
+uv run mypy src
 
 # Build
-python -m build
+uv build
 ```
 
 ### Extensão do Sistema

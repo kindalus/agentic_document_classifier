@@ -4,29 +4,59 @@
 
 Before installing the Agentic Document Classifier, ensure you have the following prerequisites:
 
-- **Python 3.8+**: The package requires Python 3.8 or higher
+- **Python 3.9+**: The package requires Python 3.9 or higher
 - **Google AI API Key**: You'll need access to Google AI Studio with an API key
 - **PDF Support**: The system processes PDF documents
+- **uv** (recommended): Modern Python package manager for faster installations
 
 ## Installation Methods
 
-### 1. Install from PyPI (When Published)
+### 1. Install with uv (Recommended)
 
-Once published to PyPI, you can install the package using pip:
+The fastest and most reliable way to install:
 
 ```bash
+# Install uv if you haven't already
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Clone the repository
+git clone https://github.com/kindalus/agentic_document_classifier.git
+cd agentic_document_classifier
+
+# Install dependencies and create virtual environment
+uv sync
+
+# Activate the virtual environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate  # Windows
+```
+
+### 2. Install from PyPI (When Published)
+
+Once published to PyPI, you can install the package using pip or uv:
+
+```bash
+# With uv (recommended)
+uv pip install agentic_document_classifier
+
+# With pip
 pip install agentic_document_classifier
 ```
 
-### 2. Install from GitHub
+### 3. Install from GitHub
 
 You can install directly from GitHub without cloning:
 
 ```bash
+# With uv (recommended)
+uv pip install git+https://github.com/kindalus/agentic_document_classifier.git
+
+# With pip
 pip install git+https://github.com/kindalus/agentic_document_classifier.git
 ```
 
-### 3. Install from Source
+### 4. Install from Source (pip)
 
 #### Clone the Repository
 
@@ -35,24 +65,18 @@ git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
 ```
 
-#### Install Dependencies
+#### Install Package
 
 For production use:
 
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
 For development with all tools:
 
 ```bash
-pip install -r requirements-dev.txt
-```
-
-#### Install Package in Development Mode
-
-```bash
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ## Environment Setup
@@ -124,7 +148,11 @@ python -c "import agentic_document_classifier; print(agentic_document_classifier
 Or test the CLI tools:
 
 ```bash
+# If virtual environment is activated
 agentic-classify --help
+
+# Or using uv run (without activating environment)
+uv run agentic-classify --help
 ```
 
 Expected output:
@@ -167,7 +195,19 @@ For development, additional packages are needed:
 
 ## Virtual Environment Setup
 
-### Using venv (Recommended)
+### Using uv (Recommended)
+
+```bash
+# uv automatically creates and manages virtual environments
+cd agentic_document_classifier
+uv sync
+
+# Activate the environment (optional, as uv run handles this)
+source .venv/bin/activate  # Linux/macOS
+.venv\Scripts\activate  # Windows
+```
+
+### Using venv
 
 ```bash
 # Create virtual environment
@@ -180,7 +220,7 @@ source agentic-env/bin/activate
 agentic-env\Scripts\activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
 
 ### Using conda
@@ -188,20 +228,13 @@ pip install -r requirements.txt
 ```bash
 conda create -n agentic-env python=3.11
 conda activate agentic-env
-pip install -r requirements.txt
-```
-
-### Using pipenv
-
-```bash
-pipenv install -r requirements.txt
-pipenv shell
+pip install -e ".[dev]"
 ```
 
 ### Using poetry
 
 ```bash
-poetry install
+poetry install --with dev
 poetry shell
 ```
 
@@ -279,19 +312,23 @@ For contributors and developers:
 git clone https://github.com/kindalus/agentic_document_classifier.git
 cd agentic_document_classifier
 
-# Create virtual environment
+# Using uv (recommended)
+uv sync --all-extras
+
+# Or using pip with virtual environment
 python -m venv dev-env
 source dev-env/bin/activate  # Linux/macOS
 # or dev-env\Scripts\activate  # Windows
-
-# Install in development mode with all dependencies
-pip install -r requirements-dev.txt
-pip install -e .
+pip install -e ".[dev]"
 ```
 
 ### 2. Install Pre-commit Hooks
 
 ```bash
+# With uv
+uv run pre-commit install
+
+# Or if environment is activated
 pre-commit install
 ```
 
@@ -300,6 +337,10 @@ This will run code quality checks before each commit.
 ### 3. Run Tests
 
 ```bash
+# With uv
+uv run pytest
+
+# Or if environment is activated
 pytest
 ```
 
@@ -307,6 +348,11 @@ pytest
 
 ```bash
 cd docs
+
+# With uv
+uv run sphinx-build -b html . _build
+
+# Or with pip
 pip install sphinx sphinx-rtd-theme myst-parser
 sphinx-build -b html . _build
 ```
