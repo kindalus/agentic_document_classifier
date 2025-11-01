@@ -3,13 +3,12 @@
 import argparse
 import json
 import multiprocessing
-import sys
 import os
-import argparse
+import sys
 from pathlib import Path
 
 from ..agents import ErrorOutput, classify_document as agent_classify
-import json
+from ..pretty_print import pretty_print
 
 
 def classify_document(filename: str):
@@ -109,9 +108,17 @@ Examples:
         for i, result in enumerate(results):
             if args.verbose or not args.output:  # pyright: ignore[reportAny]
                 print(f"\n📄 File {i + 1}: {files_to_classify[i]}")
-                print("-" * 80)
+                print("-" * 90)
                 if result:
-                    print(result.model_dump_json(indent=2))
+                    metadados_doc = getattr(result, "metadados_documento", None)
+                    d = dict(result)
+                    if metadados_doc is not None:
+                        metadados_doc = dict(metadados_doc)
+                        del d["metadados_documento"]
+                        pretty_print([d, metadados_doc])
+                    else:
+                        pretty_print(d)
+
                 else:
                     print("❌ Classification failed")
 
@@ -128,7 +135,7 @@ Examples:
     except KeyboardInterrupt:
         print("\n⚠️  Classification interrupted by user")
         sys.exit(1)
-    except (ValueError, OSError) as e:
+    except Exception as e:
         print(f"\n❌ Error during classification: {e}")
         sys.exit(1)
 
