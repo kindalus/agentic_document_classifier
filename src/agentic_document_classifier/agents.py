@@ -6,7 +6,7 @@ import hashlib
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Type, TypeVar
+from typing import TypeVar
 
 from google import genai
 from google.genai import types as genai_types
@@ -910,7 +910,7 @@ class TaxesOutput(BaseModel):
 # ============================================================================
 
 
-SPECIALIST_AGENT_CONFIG: dict[DocumentGroup, tuple[str, Type[BaseModel]]] = {
+SPECIALIST_AGENT_CONFIG: dict[DocumentGroup, tuple[str, type[BaseModel]]] = {
     DocumentGroup.DOCUMENTOS_BANCARIOS: (
         "banking_classifier_prompt",
         BankingOutput,
@@ -957,7 +957,7 @@ def _extract_response_text(response: genai_types.GenerateContentResponse) -> str
 def _invoke_structured_model(
     system_prompt: str,
     user_message: str,
-    response_model: Type[T],
+    response_model: type[T],
 ) -> tuple[T, str]:
     """
     Invoke the Gemini model requesting JSON output and validate it against a Pydantic model.
