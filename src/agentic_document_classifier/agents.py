@@ -7,7 +7,7 @@ import json
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Type
+from typing import Type, TypeVar
 
 from google import genai
 from google.genai import types as genai_types
@@ -16,7 +16,8 @@ from pydantic import BaseModel, Field, ValidationError
 from .prompts import load_prompt
 
 
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = os.environ.get("DEBUG", "").lower() in ("true", "1", "yes")
+T = TypeVar("T", bound=BaseModel)
 
 DEFAULT_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
@@ -912,7 +913,7 @@ class TaxesOutput(BaseModel):
 
 SPECIALIST_AGENT_CONFIG: dict[DocumentGroup, tuple[str, Type[BaseModel]]] = {
     DocumentGroup.DOCUMENTOS_BANCARIOS: (
-        "banking_classifier_prompt.md",
+        "banking_classifier_prompt",
         BankingOutput,
     ),
     DocumentGroup.DOCUMENTOS_ADUANEIROS: (
@@ -954,10 +955,10 @@ def _extract_response_text(response: genai_types.GenerateContentResponse) -> str
     raise ValueError("Gemini response did not contain any textual content.")
 
 
-def _invoke_structured_model[T](
+def _invoke_structured_model(
     system_prompt: str,
     user_message: str,
-    response_model: T,
+    response_model: Type[T],
 ) -> tuple[T, str]:
     """
     Invoke the Gemini model requesting JSON output and validate it against a Pydantic model.
