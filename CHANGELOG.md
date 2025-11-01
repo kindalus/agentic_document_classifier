@@ -7,11 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2025-01-01
+
+### Added
+
+- Checkpoint system for caching OCR and triage results at `/tmp/ag_classifier`
+- Pretty print utility for enhanced CLI output with formatted terminal display
+- Support for GEMINI_MODEL environment variable (default: gemini-2.5-flash)
+- Proper TypeVar with BaseModel bound for type safety
+
 ### Changed
 
-- Migrated Gemini integrations to the official `google-genai` client with direct API usage
-- Updated agent pipeline to send system prompts via `GenerateContentConfig` and cache structured outputs
-- Refreshed documentation and dependency lists to reflect the new Google Gemini integration approach
+- **BREAKING**: Migrated from Pydantic AI framework to direct Google Gemini API (`google-genai>=0.3.0`)
+- **BREAKING**: Updated Python requirement from >=3.9 to >=3.12
+- Migrated to `uv` package manager for dependency management
+- Updated CI/CD pipeline to use `uv sync` instead of pip/requirements.txt
+- Replaced deprecated `typing.Type` with built-in `type` (PEP 585)
+- Replaced `typing.Union` with modern union syntax `|` (PEP 604)
+- Improved DEBUG environment variable parsing (now properly handles string values)
+- Updated agent pipeline to use `GenerateContentConfig` with structured JSON output
+- Refreshed documentation to reflect Google Gemini direct API integration
+
+### Fixed
+
+- Banking document classification prompt filename (removed incorrect `.md` extension)
+- CI/CD pipeline failures due to non-existent requirements files
+- Package distribution manifest referencing non-existent files
+- Type safety issues in `_invoke_structured_model` function
+- Python version mismatch in documentation (updated to 3.12+)
+- DEBUG environment variable always evaluating to False
+
+### Removed
+
+- Pydantic AI dependency (replaced with direct google-genai client)
+- Orchestration agent and tool-based delegation pattern
+- Unused `json` import from agents.py
+- Non-existent requirements.txt references from MANIFEST.in and CI config
 
 ## [0.3.0] - 2025-01-XX
 
@@ -200,7 +231,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured output with type safety
 - Extensible design for adding new document categories
 
-[Unreleased]: https://github.com/kindalus/agentic_document_classifier/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/kindalus/agentic_document_classifier/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/kindalus/agentic_document_classifier/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kindalus/agentic_document_classifier/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/kindalus/agentic_document_classifier/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/kindalus/agentic_document_classifier/compare/v0.2.0...v0.2.1
