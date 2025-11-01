@@ -4,7 +4,7 @@
 
 Before installing the Agentic Document Classifier, ensure you have the following prerequisites:
 
-- **Python 3.9+**: The package requires Python 3.9 or higher
+- **Python 3.12+**: The package requires Python 3.12 or higher
 - **Google AI API Key**: You'll need access to Google AI Studio with an API key
 - **PDF Support**: The system processes PDF documents
 - **uv** (recommended): Modern Python package manager for faster installations
