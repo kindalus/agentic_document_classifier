@@ -7,7 +7,7 @@ name = "agentic_document_classifier"
 version = "0.3.6"
 description = "Intelligent document classification system using AI agents based on Google Gemini and Pydantic AI"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 license = { text = "Apache-2.0" }
 authors = [{ name = "Agentic Document Classifier Team" }]
 maintainers = [{ name = "Agentic Document Classifier Team" }]
@@ -28,11 +28,6 @@ classifiers = [
     "Intended Audience :: End Users/Desktop",
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Office/Business",
     "Topic :: Text Processing",
@@ -40,8 +35,7 @@ classifiers = [
 ]
 dependencies = [
     "pydantic>=2.0.0",
-    "pydantic-ai>=0.0.14",
-    "google-genai>=1.17.0",
+    "google-genai>=0.3.0",
     "click>=8.0.0",
     "rich>=13.0.0",
 ]
@@ -74,7 +68,7 @@ packages = ["src/agentic_document_classifier"]
 
 [tool.black]
 line-length = 88
-target-version = ['py39']
+target-version = ['py312']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -97,7 +91,7 @@ line_length = 88
 known_first_party = ["agentic_document_classifier"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -112,7 +106,7 @@ warn_unreachable = true
 strict_equality = true
 
 [[tool.mypy.overrides]]
-module = ["google.genai.*"]
+module = ["genai.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
