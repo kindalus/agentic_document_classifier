@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import argparse
+import json
 import multiprocessing
 import sys
 import os
@@ -126,7 +128,7 @@ Examples:
     except KeyboardInterrupt:
         print("\n⚠️  Classification interrupted by user")
         sys.exit(1)
-    except Exception as e:
+    except (ValueError, OSError) as e:
         print(f"\n❌ Error during classification: {e}")
         sys.exit(1)
 

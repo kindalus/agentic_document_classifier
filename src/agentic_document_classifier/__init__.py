@@ -5,9 +5,8 @@ Automates triage and classification of business documents into specific categori
 extracting relevant metadata from each document type.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.3.6"
 __author__ = "Agentic Document Classifier Team"
-__email__ = ""
 __description__ = "Intelligent document classification system using AI agents"
 
 from .agents import classify_document

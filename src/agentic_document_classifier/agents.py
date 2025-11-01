@@ -1,19 +1,50 @@
 """
-Pydantic AI Agents for Document Classification
-Implements multi-agent orchestration with delegation pattern
+Gemini-powered agents for document classification using direct Google AI API access.
 """
 
+import hashlib
+import json
 import os
 from enum import Enum
 from pathlib import Path
+from typing import Type
 
-from pydantic import BaseModel, Field
-from pydantic.dataclasses import dataclass
-from pydantic_ai import Agent, BinaryContent, RunUsage
-from pydantic_ai.tools import RunContext
+from google import genai
+from google.genai import types as genai_types
+from pydantic import BaseModel, Field, ValidationError
+
+from .prompts import load_prompt
 
 
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", False)
+
+DEFAULT_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+
+if not GOOGLE_API_KEY:
+    raise EnvironmentError(
+        "GOOGLE_API_KEY environment variable is required for Gemini API usage."
+    )
+
+CLIENT = genai.Client(api_key=GOOGLE_API_KEY)
+
+
+CHECKPOINT_DIRECTORY = Path("/tmp/ag_classifier")
+
+
+def _checkpoint_path(step: int, identifier: str, suffix: str = ".json") -> Path:
+    return CHECKPOINT_DIRECTORY / f"{identifier}_step_{step}{suffix}"
+
+
+def _store_checkpoint(path: Path, payload: str) -> None:
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as file_handle:
+            _ = file_handle.write(payload)
+    except OSError as error:
+        if DEBUG:
+            print(f"Failed to store checkpoint {path}: {error}")
+
 
 # ============================================================================
 # Data Models
@@ -296,7 +327,7 @@ class MetadadosDocumentoUnicoProvisorio(MetadadosComunsAduaneiro):
 class MetadadosDocumentoUnico(MetadadosComunsAduaneiro):
     referencia_registo: str = Field(
         ...,
-        description='Referência de registo aduaneiro. Extraída ou construída no formato "yyyy R NNNN[NN]". Se o conteudo apresentar uma "Customs Reference" (ou etiqueta similar) apenas com o padrão "R NNNN[NN]", o ano (\'yyyy\') deve ser prefixado a partir da data_emissao do documento fornecida na entrada.',
+        description='Referência de registo aduaneiro. Extraída ou construída no formato "yyyy R NNNN[NN]". Se o conteudo apresentar uma "Customs Reference" (ou etiqueta similar) apenas com o padrão "R NNNN[NN]", o ano (yyyy) deve ser prefixado a partir da data_emissao do documento fornecida na entrada.',
     )
     origem_mercadoria: str = Field(..., description="País de origem.")
     total_facturado: float = Field(..., description="Valor total facturado.")
@@ -396,6 +427,7 @@ class CustomsOutput(BaseModel):
         ...,
         description="Justificação detalhada para a classificação, em português europeu (pré-AO1990).",
     )
+
     metadados_documento: (
         MetadadosDocumentoUnicoProvisorio
         | MetadadosDocumentoUnico
@@ -543,7 +575,7 @@ class FreightOutput(BaseModel):
 
 
 class HrDocumentType(str, Enum):
-    FOLHA_REMUNERACAO = ("FOLHA_REMUNERACAO",)
+    FOLHA_REMUNERACAO = "FOLHA_REMUNERACAO"
     FOLHA_REMUNERACAO_INSS = "FOLHA_REMUNERACAO_INSS"
     OUTRO_DOCUMENTO = "OUTRO_DOCUMENTO"
 
@@ -678,7 +710,8 @@ class InvoiceOutput(BaseModel):
     )
     tipo_documento: InvoiceDocumentType
     metadados_documento: (
-        MetadadosProformaFactura
+        MetadadosComunsFactura
+        | MetadadosProformaFactura
         | MetadadosGlobalGenerica
         | MetadadosNotaDebito
         | MetadadosNotaCredito
@@ -870,206 +903,156 @@ class TaxesOutput(BaseModel):
 # ============================================================================
 # Utilities
 # ============================================================================
-def load_markdown(path: str, base_dir: str = "./prompts") -> str:
-    """
-    Reads the entire content of a file into a single string.
 
-    Args:
-        file_path (str): The path to the text file.
 
-    Returns:
-        str: The content of the file as a single string.
+# ============================================================================
+# Specialist Prompt Configuration
+# ============================================================================
+
+
+SPECIALIST_AGENT_CONFIG: dict[DocumentGroup, tuple[str, Type[BaseModel]]] = {
+    DocumentGroup.DOCUMENTOS_BANCARIOS: (
+        "banking_classifier_prompt.md",
+        BankingOutput,
+    ),
+    DocumentGroup.DOCUMENTOS_ADUANEIROS: (
+        "customs_classifier_prompt",
+        CustomsOutput,
+    ),
+    DocumentGroup.DOCUMENTOS_COMERCIAIS: (
+        "invoice_classifier_prompt",
+        InvoiceOutput,
+    ),
+    DocumentGroup.DOCUMENTOS_FISCAIS: ("taxes_classifier_prompt", TaxesOutput),
+    DocumentGroup.DOCUMENTOS_FRETE: ("freight_classifier_prompt", FreightOutput),
+    DocumentGroup.DOCUMENTOS_RH: ("hr_classifier_prompt", HrOutput),
+}
+
+
+# ============================================================================
+# Gemini Helpers
+# ============================================================================
+
+
+def _extract_response_text(response: genai_types.GenerateContentResponse) -> str:
     """
+    Extract textual content from a Gemini response object.
+    """
+    text = getattr(response, "text", None)
+    if text:
+        return text
+
+    for candidate in getattr(response, "candidates", []):
+        content = getattr(candidate, "content", None)
+        if not content:
+            continue
+        for part in getattr(content, "parts", []):
+            part_text = getattr(part, "text", None)
+            if part_text:
+                return part_text
+
+    raise ValueError("Gemini response did not contain any textual content.")
+
+
+def _invoke_structured_model[T](
+    system_prompt: str,
+    user_message: str,
+    response_model: T,
+) -> tuple[T, str]:
+    """
+    Invoke the Gemini model requesting JSON output and validate it against a Pydantic model.
+    """
+    response = CLIENT.models.generate_content(
+        model=DEFAULT_MODEL_NAME,
+        config=genai_types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            response_mime_type="application/json",
+            response_schema=response_model,
+            temperature=0.2,
+        ),
+        contents=[user_message],
+    )
+
+    payload = _extract_response_text(response)
+
     try:
-        # 'with open(file_path, 'r')' opens the file in read mode ('r')
-        # and ensures it's automatically closed afterwards.
-        with open(f"{base_dir}/path", "r", encoding="utf-8") as file:
-            # The .read() method reads the entire content of the file
-            # and returns it as a single string.
-            file_content = file.read()
-        return file_content
-    except FileNotFoundError:
-        return f"Error: The file '{path}' was not found."
-    except Exception as e:
-        return f"An error occurred: {e}"
+        parsed = response_model.model_validate_json(payload)
+    except ValidationError as error:
+        if DEBUG:
+            print("Failed to parse structured response:")
+            print(payload)
+        raise RuntimeError(
+            f"Failed to validate Gemini response for {response_model.__name__}: {error}"
+        ) from error
+
+    return parsed, payload
 
 
-# ============================================================================
-# Agents
-# ============================================================================
+def _generate_markdown_from_pdf(pdf_path: Path) -> str:
+    """
+    Convert a PDF document to Markdown using the Gemini API.
+    """
+    prompt = load_prompt("ocr_prompt")
 
-
-@dataclass
-class DocumentPath:
-    path: str
-
-
-ocr_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=str,
-    system_prompt=load_markdown("ocr_prompt.md"),
-)
-
-triage_agent = Agent(
-    "gemini-2.5-flash",
-    deps_type=DocumentPath,
-    output_type=TriageOutput | ErrorOutput,
-    system_prompt=load_markdown("triage_prompt.md"),
-)
-
-banking_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=BankingOutput | ErrorOutput,
-    system_prompt=load_markdown("banking_prompt.md"),
-)
-
-customs_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=CustomsOutput | ErrorOutput,
-    system_prompt=load_markdown("customs_prompt.md"),
-)
-
-freight_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=FreightOutput | ErrorOutput,
-    system_prompt=load_markdown("freight_prompt.md"),
-)
-
-hr_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=HrOutput | ErrorOutput,
-    system_prompt=load_markdown("hr_prompt.md"),
-)
-
-invoice_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=InvoiceOutput | ErrorOutput,
-    system_prompt=load_markdown("invoice_prompt.md"),
-)
-
-taxes_agent = Agent(
-    "gemini-2.5-flash",
-    output_type=TaxesOutput | ErrorOutput,
-    system_prompt=load_markdown("taxes_prompt.md"),
-)
-
-
-orchestration_agent = Agent(
-    "gemini-2.5-flash",
-    deps_type=DocumentPath,
-    output_type=str,
-    system_prompt=load_markdown("orchestration___prompt.md"),
-)
-
-
-@orchestration_agent.tool
-def ocr_document(ctx: RunContext[DocumentPath]) -> str:
-    pdf_path = Path(ctx.deps.path)
-    data = BinaryContent(pdf_path.read_bytes(), media_type="application/pdf")
-    result = ocr_agent.run_sync(
-        [
-            "Converte o documento em markdown",
-            data,
+    response = CLIENT.models.generate_content(
+        model=DEFAULT_MODEL_NAME,
+        config=genai_types.GenerateContentConfig(
+            system_instruction=prompt, response_mime_type="text/plain"
+        ),
+        contents=[
+            genai_types.Part.from_bytes(
+                data=pdf_path.read_bytes(), mime_type="application/pdf"
+            ),
+            f"""Converte o documento em markdown.
+                Localização original do ficheiro: {pdf_path}""",
         ],
-        usage=ctx.usage,
     )
 
-    if DEBUG:
-        print("DEBUG: ocr_document output")
-        print(f"Result\n\b{result.output}")
+    markdown = _extract_response_text(response)
 
-    return result.output
+    if not markdown:
+        raise RuntimeError("Gemini OCR step returned empty content.")
+
+    return markdown
 
 
-@orchestration_agent.tool
-def triage_document(ctx: RunContext[DocumentPath], content: str) -> str:
-    result = triage_agent.run_sync(
-        [
-            "Classifica este documento",
-            f"Localização original do ficheiro: {ctx.deps.path}",
-            content,
-        ],
-        deps=ctx.deps,
-        usage=ctx.usage,
+def _run_triage(
+    original_path: str,
+    markdown_content: str,
+) -> tuple[TriageOutput, str]:
+    prompt = load_prompt("triage_prompt")
+    user_message = (
+        f"Localização original do ficheiro: {original_path}\n\n"
+        "Conteúdo do documento em Markdown:\n"
+        f"{markdown_content}"
     )
 
-    if DEBUG:
-        print("DEBUG: triage_document output")
-        print(result.output.model_dump_json(indent=3))
-
-    return result.output.model_dump_json()
+    return _invoke_structured_model(prompt, user_message, TriageOutput)
 
 
-@orchestration_agent.tool
-def classify_banking(ctx: RunContext[DocumentPath], input: str) -> str:
-    result = banking_agent.run_sync(
-        ["Classifica este documento", input], usage=ctx.usage
+def _run_specialist_classification(
+    triage_result: TriageOutput,
+) -> tuple[BaseModel, str]:
+    config = SPECIALIST_AGENT_CONFIG.get(triage_result.grupo_documento)
+    if not config:
+        raise ValueError(
+            f"No specialist configuration for document group {triage_result.grupo_documento}"
+        )
+
+    prompt_filename, response_model = config
+    prompt = load_prompt(prompt_filename)
+    user_message = (
+        "Classifica este documento de acordo com o resultado da triagem.\n\n"
+        "Resultado da triagem em JSON:\n"
+        f"{triage_result.model_dump_json(indent=2)}"
     )
 
-    return result.output.model_dump_json()
-
-
-@orchestration_agent.tool
-def classify_customs(ctx: RunContext[DocumentPath], input: str) -> str:
-    result = customs_agent.run_sync(
-        ["Classifica este documento", input], usage=ctx.usage
-    )
-
-    return result.output.model_dump_json()
-
-
-@orchestration_agent.tool
-def classify_freight(ctx: RunContext[DocumentPath], input: str) -> str:
-    result = freight_agent.run_sync(
-        ["Classifica este documento", input], usage=ctx.usage
-    )
-
-    return result.output.model_dump_json()
-
-
-@orchestration_agent.tool
-def classify_hr(
-    ctx: RunContext[DocumentPath], input: TriageOutput
-) -> HrOutput | ErrorOutput:
-    result = hr_agent.run_sync(
-        [
-            "Classifica este documento",
-            input.model_dump_json(),
-        ],
-        usage=ctx.usage,
-    )
-
-    return result.output
-
-
-@orchestration_agent.tool
-def classify_invoice(ctx: RunContext[DocumentPath], input: str) -> str:
-    result = invoice_agent.run_sync(
-        ["Classifica este documento", input], usage=ctx.usage
-    )
-
-    return result.output.model_dump_json()
-
-
-@orchestration_agent.tool
-def classify_taxes(ctx: RunContext[DocumentPath], input: str) -> str:
-    result = taxes_agent.run_sync(["Classifica este documento", input], usage=ctx.usage)
-
-    return result.output.model_dump_json()
+    return _invoke_structured_model(prompt, user_message, response_model)
 
 
 # ============================================================================
 # Main Classification Function
 # ============================================================================
-def classify_document_auto(
-    pdf_path: str,
-) -> str:
-    deps = DocumentPath(path=pdf_path)
-    result = orchestration_agent.run_sync(pdf_path, deps=deps)
-
-    print(f"Usage: {result.usage()}")
-
-    return result.output
 
 
 def classify_document(
@@ -1085,115 +1068,138 @@ def classify_document(
     | ErrorOutput
 ):
     """
-    Main function to classify a document using the 'Programmatic agent hand-off' pattern.
+    Main function to classify a document using programmatic delegation pattern.
 
     Args:
-        pdf_path: Path to the PDF document
+        path: Path to the PDF document
 
     Returns:
-        Classification result
+        Classification result with structured output
     """
     try:
-        usage = RunUsage()
+        # ====================================================================
+        # Step 1: OCR - Convert PDF to Markdown
+        # ====================================================================
+        if DEBUG:
+            print(f"\n{'=' * 60}")
+            print("Step 1: OCR Processing")
+            print(f"{'=' * 60}")
+
         pdf_path = Path(path)
-        data = BinaryContent(pdf_path.read_bytes(), media_type="application/pdf")
-        result = ocr_agent.run_sync(
-            [
-                "Converte o documento em markdown",
-                data,
-            ],
-            usage=usage,
-        )
+        if not pdf_path.exists():
+            return ErrorOutput(
+                localizacao_ficheiro=path,
+                erro=f"File not found: {path}",
+            )
 
-        result = triage_agent.run_sync(
-            [
-                "Classifica este documento",
-                f"Localização original do ficheiro: {pdf_path}",
-                result.output,
-            ],
-            deps=DocumentPath(path),
-            usage=result.usage(),
-        )
-        output = result.output
+        pdf_bytes = pdf_path.read_bytes()
+        file_size = len(pdf_bytes)
+        file_md5 = hashlib.md5(pdf_bytes).hexdigest()
+        file_identifier = f"{file_md5}{file_size}"
 
-        prompt = ["Classifica este documento", output.model_dump_json()]
-
-        if isinstance(output, ErrorOutput):
-            print(f"Model usage: \n{result.usage()}")
-            return output
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_ADUANEIROS:
-            result = customs_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_BANCARIOS:
-            result = banking_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_COMERCIAIS:
-            result = invoice_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_FISCAIS:
-            result = taxes_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_FRETE:
-            result = freight_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
-        elif output.grupo_documento == DocumentGroup.DOCUMENTOS_RH:
-            result = hr_agent.run_sync(
-                prompt,
-                usage=result.usage(),
-            )
+        step_1_path = _checkpoint_path(1, file_identifier, suffix=".md")
+        if step_1_path.exists():
+            markdown_content = step_1_path.read_text(encoding="utf-8")
+            if DEBUG:
+                print("Loaded OCR result from checkpoint")
         else:
-            # print(f"Model usage: \n{result.usage()}")
-            return output
+            markdown_content = _generate_markdown_from_pdf(pdf_path)
+            _store_checkpoint(step_1_path, markdown_content)
+            if DEBUG:
+                print(
+                    f"OCR completed. Content length: {len(markdown_content)} characters"
+                )
+                print(f"First 200 chars: {markdown_content[:200]}...")
 
-        # print(f"Model usage: \n{result.usage()}")
-        return result.output
+        if DEBUG:
+            print(
+                f"Using OCR content. Content length: {len(markdown_content)} characters"
+            )
 
-    except Exception as e:
-        print(f"Model usage: \n{usage}")
+        print("Step 1: OCR Processing ✓")
+
+        # ====================================================================
+        # Step 2: Triage - Classify document category
+        # ====================================================================
+        if DEBUG:
+            print(f"\n{'=' * 60}")
+            print("Step 2: Triage Classification")
+            print(f"{'=' * 60}")
+
+        step_2_path = _checkpoint_path(2, file_identifier)
+        triage_result: TriageOutput | None = None
+        if step_2_path.exists():
+            try:
+                triage_result = TriageOutput.model_validate_json(
+                    step_2_path.read_text(encoding="utf-8")
+                )
+                if DEBUG:
+                    print("Loaded triage classification from checkpoint")
+            except (OSError, ValidationError) as error:
+                if DEBUG:
+                    print(f"Failed to load triage checkpoint {step_2_path}: {error}")
+                triage_result = None
+
+        if triage_result is None:
+            triage_result, triage_json = _run_triage(path, markdown_content)
+            _store_checkpoint(step_2_path, triage_json)
+
+        if DEBUG and triage_result:
+            print(f"Document Group: {triage_result.grupo_documento}")
+            print(f"Document Number: {triage_result.numero_documento}")
+            print(f"Emission Date: {triage_result.data_emissao}")
+            print(f"Triage Notes: {triage_result.notas_triagem[:200]}...")
+
+        print("Step 2: Triage Classification ✓")
+
+        # ====================================================================
+        # Step 3: Specialized Classification
+        # ====================================================================
+        if DEBUG:
+            print(f"\n{'=' * 60}")
+            print(
+                f"Step 3: Specialized Classification - {triage_result.grupo_documento}"
+            )
+            print(f"{'=' * 60}")
+
+        if triage_result.grupo_documento not in SPECIALIST_AGENT_CONFIG:
+            # Return triage result for OUTROS_DOCUMENTOS
+            if DEBUG:
+                print(
+                    "Document classified as OUTROS_DOCUMENTOS, returning triage result"
+                )
+            return triage_result
+
+        step_3_path = _checkpoint_path(3, file_identifier)
+
+        final_result, final_json = _run_specialist_classification(triage_result)
+        _store_checkpoint(step_3_path, final_json)
+
+        if DEBUG:
+            print("Classification completed successfully")
+            if hasattr(final_result, "tipo_documento"):
+                print(f"Document Type: {final_result.tipo_documento}")
+
+        print("Step 3: Specialized Classification ✓")
+
+        return final_result
+
+    except (RuntimeError, ValueError, OSError) as e:
+        error_msg = f"Classification error: {str(e)}"
+        if DEBUG:
+            print(f"\n{'=' * 90}")
+            print(f"ERROR: {error_msg}")
+            print(f"{'=' * 90}")
+            import traceback
+
+            traceback.print_exc()
 
         return ErrorOutput(
-            localizacao_ficheiro=path, erro=f"Classification error: {str(e)}"
+            localizacao_ficheiro=path,
+            erro=error_msg,
         )
 
 
 # ============================================================================
 # CLI Interface
 # ============================================================================
-
-
-def main():
-    """Main CLI interface"""
-    import sys
-
-    if len(sys.argv) < 2:
-        print("Usage: python agents_claude.py <pdf_path>")
-        sys.exit(1)
-
-    pdf_path = sys.argv[1]
-
-    if not os.path.exists(pdf_path):
-        print(f"Error: File not found: {pdf_path}")
-        sys.exit(1)
-
-    print(f"Classifying document: {pdf_path}")
-
-    result = classify_document(pdf_path)
-
-    print("\n" + "=" * 60)
-    print("CLASSIFICATION RESULT:")
-    print("=" * 60)
-    print(result.model_dump_json(indent=3))
-
-
-if __name__ == "__main__":
-    main()
