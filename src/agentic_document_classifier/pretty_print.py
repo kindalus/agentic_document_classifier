@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
-from typing import Any, Union
+from typing import Any
 
 
 def pretty_print(
-    data: Union[Mapping[str, Any], Iterable[Mapping[str, Any]]], columns: int = 90
+    data: Mapping[str, Any] | Iterable[Mapping[str, Any]], columns: int = 90
 ) -> None:
     if isinstance(data, Mapping):
         items: Iterable[Mapping[str, Any]] = (data,)

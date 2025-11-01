@@ -3,7 +3,6 @@ Gemini-powered agents for document classification using direct Google AI API acc
 """
 
 import hashlib
-import json
 import os
 from enum import Enum
 from pathlib import Path
