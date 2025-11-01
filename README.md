@@ -1,6 +1,6 @@
 # Agentic Document Classifier
 
-Um sistema de classificação inteligente de documentos empresariais utilizando agentes de IA baseados no Google Gemini (via Pydantic AI). O sistema automatiza a triagem e classificação de documentos PDF em categorias específicas, extraindo metadados relevantes de cada tipo de documento.
+Um sistema de classificação inteligente de documentos empresariais que utiliza directamente a API do Google Gemini. O sistema automatiza a triagem e classificação de documentos PDF em categorias específicas, extraindo metadados relevantes de cada tipo de documento, sem dependências de frameworks de terceiros para a orquestração.
 
 ## 🚀 Funcionalidades
 
@@ -9,7 +9,7 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 - **Extração de Metadados**: Extrai informações específicas baseadas no tipo de documento
 - **Agentes Especializados**: Sistema multi-agente com orquestração e delegação
 - **Output Estruturado**: Resultados em formato JSON com schema Pydantic
-- **Arquitetura Moderna**: Baseada em Pydantic AI com suporte a múltiplos modelos LLM
+- **Arquitetura Moderna**: Comunicação directa com a Gemini API, com suporte a múltiplos modelos LLM configuráveis via variável de ambiente `GEMINI_MODEL`
 
 ## 📋 Categorias de Documentos Suportadas
 
@@ -56,7 +56,7 @@ Um sistema de classificação inteligente de documentos empresariais utilizando 
 
 ### Pré-requisitos
 
-- Python 3.9+
+- Python 3.12+
 - Conta Google AI Studio com API key
 - [uv](https://docs.astral.sh/uv/) (recomendado para gestão de dependências)
 
@@ -106,6 +106,12 @@ Configure a variável de ambiente com sua chave da API do Google AI:
 
 ```bash
 export GOOGLE_API_KEY="sua_chave_aqui"
+```
+
+Opcionalmente, pode definir o modelo Gemini a utilizar (por omissão `gemini-2.5-flash`):
+
+```bash
+export GEMINI_MODEL="gemini-2.0-flash"
 ```
 
 ## 📖 Uso
@@ -207,7 +213,7 @@ else:
 
 ### Visão Geral
 
-O sistema utiliza uma arquitetura multi-agente baseada em **Pydantic AI** com padrão de orquestração e delegação:
+O sistema utiliza uma arquitetura multi-agente suportada directamente pela **API Google Gemini** (biblioteca `google-genai`), mantendo o padrão de delegação programática:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -218,26 +224,21 @@ O sistema utiliza uma arquitetura multi-agente baseada em **Pydantic AI** com pa
 ┌─────────────────────────────────────────────────────────────┐
 │                   OCR Agent                                  │
 │         (Converte PDF para Markdown)                         │
+│            Gemini API (`google-genai`)                       │
 └─────────────────────┬───────────────────────────────────────┘
                       │
                       ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                 Triage Agent                                 │
 │      (Identifica categoria do documento)                     │
+│          Gemini API + Structured Output JSON                 │
 └─────────────────────┬───────────────────────────────────────┘
                       │
-        ┌─────────────┴────────────┐
-        │                          │
-        ▼                          ▼
-┌──────────────────┐     ┌──────────────────────┐
-│ Orchestration    │     │  Direct Processing   │
-│ Agent            │     │  (via Python)        │
-│ (Tool-based)     │     └──────────────────────┘
-└────────┬─────────┘              │
-         │                        │
-         ▼                        ▼
+                      │ (Delegação Programática)
+                      ▼
 ┌─────────────────────────────────────────────────────────────┐
 │            Specialized Classification Agents                 │
+│       (Google Gemini API + Structured Output)                │
 │                                                              │
 │  • Banking Agent    • Customs Agent    • Freight Agent      │
 │  • HR Agent         • Invoice Agent    • Taxes Agent        │
@@ -246,6 +247,7 @@ O sistema utiliza uma arquitetura multi-agente baseada em **Pydantic AI** com pa
                       ▼
 ┌─────────────────────────────────────────────────────────────┐
 │              Structured Output (JSON)                        │
+│                  (Pydantic Models)                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -263,7 +265,6 @@ agentic_document_classifier/
 │       ├── __init__.py
 │       ├── ocr_prompt.md
 │       ├── triage_prompt.md
-│       ├── orchestration_prompt.md
 │       ├── banking_classifier_prompt.md
 │       ├── customs_classifier_prompt.md
 │       ├── freight_classifier_prompt.md
@@ -273,9 +274,8 @@ agentic_document_classifier/
 ├── examples/                    # Exemplos de uso
 ├── docs/                        # Documentação
 ├── tests/                       # Testes (a desenvolver)
-├── requirements.txt             # Dependências de produção
-├── requirements-dev.txt         # Dependências de desenvolvimento
 ├── pyproject.toml              # Configuração do pacote
+├── uv.lock                     # Lock file do uv
 ├── README.md
 └── CHANGELOG.md
 ```
@@ -284,12 +284,11 @@ agentic_document_classifier/
 
 #### 1. Agentes de IA (agents.py)
 
-Todos os agentes estão consolidados num único módulo:
+Todos os agentes estão consolidados num único módulo que conversa directamente com a API Gemini:
 
-- **OCR Agent**: Converte PDF para Markdown
-- **Triage Agent**: Identifica categoria do documento
-- **Orchestration Agent**: Coordena o fluxo de trabalho (opcional, via tools)
-- **Specialized Agents**: 6 agentes especializados por categoria
+- **OCR Agent**: Converte PDF para Markdown enviando ficheiros para a API (`google-genai`)
+- **Triage Agent**: Identifica a categoria do documento usando respostas estruturadas em JSON
+- **Specialized Agents**: 6 classificadores específicos, cada um com prompts dedicados e validação via Pydantic
 
 #### 2. Modelos de Dados
 
@@ -327,9 +326,9 @@ Cada agente utiliza prompts específicos em português europeu (pré-AO 1990):
 3. **Classificação**: Agente especializado → Tipo específico + Metadados
 4. **Output**: Resultado estruturado em JSON
 
-### Modos de Operação
+### Modo de Operação
 
-#### Modo Programático (Recomendado)
+O sistema utiliza **delegação programática** para máxima eficiência e controle:
 
 ```python
 from agentic_document_classifier import classify_document
@@ -337,17 +336,12 @@ from agentic_document_classifier import classify_document
 result = classify_document("documento.pdf")
 ```
 
-Usa delegação programática Python para eficiência máxima.
+Este padrão oferece:
 
-#### Modo Orquestração (Experimental)
-
-```python
-from agentic_document_classifier.agents import classify_document_auto
-
-result = classify_document_auto("documento.pdf")
-```
-
-Usa o agente de orquestração com tools para workflow completo gerido pelo LLM.
+- Fluxo de trabalho explícito e previsível
+- Facilidade de debug e manutenção
+- Eficiência (sem chamadas LLM desnecessárias para routing)
+- Controle total sobre o processo de classificação
 
 ## ⚙️ Configuração
 
@@ -355,13 +349,11 @@ Usa o agente de orquestração com tools para workflow completo gerido pelo LLM.
 
 Por padrão, o sistema utiliza `gemini-2.5-flash`. Para alterar:
 
-```python
-# Em agents.py, modificar a definição dos agentes:
-ocr_agent = Agent(
-    "gemini-1.5-pro",  # Ou outro modelo compatível
-    # ...
-)
+```bash
+export GEMINI_MODEL="gemini-2.0-flash"
 ```
+
+Depois, execute normalmente (`uv run agentic-classify ...` ou via API). Se não definir a variável, o modelo padrão será `gemini-2.5-flash`.
 
 ### Processos Paralelos
 
@@ -452,8 +444,7 @@ novo_documento_agent = Agent(
 ## 📝 Dependências Principais
 
 - **pydantic** (>=2.0.0): Validação de dados e schemas
-- **pydantic-ai** (>=0.0.14): Framework de agentes IA
-- **google-genai** (>=1.17.0): Integração com Google Gemini
+- **google-genai** (>=0.3.0): Cliente oficial da API Gemini
 - **click** (>=8.0.0): Interface de linha de comando
 - **rich** (>=13.0.0): Output formatado no terminal
 

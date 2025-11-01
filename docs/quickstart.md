@@ -82,44 +82,6 @@ else:
     print(f"Metadata: {result.metadados_documento}")
 ```
 
-#### Advanced Usage - Direct Agent Access
-
-```python
-from agentic_document_classifier.agents import (
-    classify_document,
-    ocr_agent,
-    triage_agent,
-    banking_agent,
-    customs_agent,
-)
-from pathlib import Path
-from pydantic_ai import BinaryContent
-
-# Manual OCR
-pdf_path = Path("document.pdf")
-data = BinaryContent(pdf_path.read_bytes(), media_type="application/pdf")
-ocr_result = ocr_agent.run_sync([
-    "Converte o documento em markdown",
-    data,
-])
-print(ocr_result.output)
-
-# Manual Triage
-from agentic_document_classifier.agents import DocumentPath
-triage_result = triage_agent.run_sync(
-    ["Classifica este documento", f"Localização: {pdf_path}", ocr_result.output],
-    deps=DocumentPath(str(pdf_path))
-)
-print(triage_result.output.model_dump_json(indent=2))
-
-# Direct specialist agent usage
-if triage_result.output.grupo_documento == "DOCUMENTOS_BANCARIOS":
-    banking_result = banking_agent.run_sync(
-        ["Classifica este documento", triage_result.output.model_dump_json()]
-    )
-    print(banking_result.output.model_dump_json(indent=2))
-```
-
 ## Document Categories
 
 | Category                | Description          | Examples                              |
@@ -290,28 +252,24 @@ Solution: Verify PDF is valid, not corrupted, and not password-protected
 **Import Error**:
 
 ```
-ModuleNotFoundError: No module named 'pydantic_ai'
+ModuleNotFoundError: No module named 'genai'
 ```
 
-Solution: Install all dependencies:
+Solution: Instale as dependências do projecto (recomendado via uv):
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## Configuration
 
 ### Custom Model
 
-To use a different model, modify `agents.py`:
+Para utilizar outro modelo Gemini defina a variável de ambiente `GEMINI_MODEL` antes de executar a classificação:
 
-```python
-# Change from gemini-2.5-flash to gemini-1.5-pro
-ocr_agent = Agent(
-    "gemini-1.5-pro",
-    output_type=str,
-    system_prompt=load_markdown("ocr_prompt.md"),
-)
+```bash
+export GEMINI_MODEL="gemini-2.0-flash"
+uv run agentic-classify documento.pdf
 ```
 
 ### Debug Mode

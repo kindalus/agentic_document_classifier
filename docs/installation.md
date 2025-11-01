@@ -176,10 +176,9 @@ Options:
 The package requires:
 
 - **pydantic** (>=2.0.0): Data validation and schemas
-- **pydantic-ai** (>=0.0.14): AI agent framework
-- **google-genai** (>=1.17.0): Google Gemini integration
-- **click** (>=8.0.0): CLI interface
-- **rich** (>=13.0.0): Terminal formatting
+- **google-genai** (>=0.3.0): Cliente oficial da API Google Gemini
+- **click** (>=8.0.0): Interface de linha de comando
+- **rich** (>=13.0.0): Formatação avançada no terminal
 
 ### Development Dependencies
 
@@ -226,7 +225,7 @@ pip install -e ".[dev]"
 ### Using conda
 
 ```bash
-conda create -n agentic-env python=3.11
+conda create -n agentic-env python=3.12
 conda activate agentic-env
 pip install -e ".[dev]"
 ```
@@ -367,10 +366,10 @@ sphinx-build -b html . _build
 - If using development mode, ensure you're in the correct virtual environment
 - Try reinstalling: `pip install -e .`
 
-#### ImportError: No module named 'pydantic_ai'
+#### ImportError: No module named 'genai'
 
-- Install all dependencies: `pip install -r requirements.txt`
-- Verify pydantic-ai is installed: `pip show pydantic-ai`
+- Instale todas as dependências: `uv sync` ou `pip install -e ".[dev]"`
+- Verifique se `google-genai` está instalado: `pip show google-genai`
 
 #### API Key Not Found
 

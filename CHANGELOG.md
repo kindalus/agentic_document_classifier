@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Migrated Gemini integrations to the official `google-genai` client with direct API usage
+- Updated agent pipeline to send system prompts via `GenerateContentConfig` and cache structured outputs
+- Refreshed documentation and dependency lists to reflect the new Google Gemini integration approach
+
 ## [0.3.0] - 2025-01-XX
 
 ### Added
