@@ -7,6 +7,7 @@ import os
 import sys
 from pathlib import Path
 
+from .. import __version__
 from ..agents import ErrorOutput, classify_document as agent_classify
 from ..pretty_print import pretty_print
 
@@ -41,7 +42,14 @@ Examples:
         """,
     )
 
-    _ = parser.add_argument("files", nargs="+", help="PDF files to classify")
+    _ = parser.add_argument("files", nargs="*", help="PDF files to classify")
+
+    _ = parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show program version and exit",
+    )
 
     _ = parser.add_argument(
         "--processes",
@@ -59,6 +67,11 @@ Examples:
     )
 
     args = parser.parse_args()
+
+    # Handle --version case (already handled by argparse, this is for clarity)
+    if not args.files:  # pyright: ignore[reportAny]
+        parser.print_help()
+        sys.exit(1)
 
     # Validate and collect files
     files_to_classify: list[str] = []

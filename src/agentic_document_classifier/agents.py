@@ -21,12 +21,20 @@ T = TypeVar("T", bound=BaseModel)
 DEFAULT_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
-if not GOOGLE_API_KEY:
-    raise EnvironmentError(
-        "GOOGLE_API_KEY environment variable is required for Gemini API usage."
-    )
+# Lazy initialization of CLIENT - only when needed
+CLIENT = None
 
-CLIENT = genai.Client(api_key=GOOGLE_API_KEY)
+
+def _get_client() -> genai.Client:
+    """Get or create the Gemini client instance."""
+    global CLIENT
+    if CLIENT is None:
+        if not GOOGLE_API_KEY:
+            raise EnvironmentError(
+                "GOOGLE_API_KEY environment variable is required for Gemini API usage."
+            )
+        CLIENT = genai.Client(api_key=GOOGLE_API_KEY)
+    return CLIENT
 
 
 CHECKPOINT_DIRECTORY = Path("/tmp/ag_classifier")
@@ -962,7 +970,8 @@ def _invoke_structured_model(
     """
     Invoke the Gemini model requesting JSON output and validate it against a Pydantic model.
     """
-    response = CLIENT.models.generate_content(
+    client = _get_client()
+    response = client.models.generate_content(
         model=DEFAULT_MODEL_NAME,
         config=genai_types.GenerateContentConfig(
             system_instruction=system_prompt,
@@ -993,8 +1002,9 @@ def _generate_markdown_from_pdf(pdf_path: Path) -> str:
     Convert a PDF document to Markdown using the Gemini API.
     """
     prompt = load_prompt("ocr_prompt")
+    client = _get_client()
 
-    response = CLIENT.models.generate_content(
+    response = client.models.generate_content(
         model=DEFAULT_MODEL_NAME,
         config=genai_types.GenerateContentConfig(
             system_instruction=prompt, response_mime_type="text/plain"
