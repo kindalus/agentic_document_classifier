@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2025-01-01
+
+### Added
+
+- `--version` flag to display package version without requiring API key
+- Lazy initialization of Gemini API client (only initialized when needed)
+
+### Changed
+
+- CLI help and version commands now work without `GOOGLE_API_KEY` environment variable
+- Files argument changed from required to optional for better UX
+
+### Fixed
+
+- Module import error when API key is not set
+- CLI now shows help message when invoked without arguments
+
 ## [0.4.0] - 2025-01-01
 
 ### Added
@@ -231,7 +248,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured output with type safety
 - Extensible design for adding new document categories
 
-[Unreleased]: https://github.com/kindalus/agentic_document_classifier/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/kindalus/agentic_document_classifier/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/kindalus/agentic_document_classifier/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/kindalus/agentic_document_classifier/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kindalus/agentic_document_classifier/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/kindalus/agentic_document_classifier/compare/v0.2.1...v0.2.2
