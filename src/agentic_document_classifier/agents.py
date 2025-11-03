@@ -22,7 +22,7 @@ DEFAULT_MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
 
 # Lazy initialization of CLIENT - only when needed
-CLIENT = None
+CLIENT: genai.Client | None = None
 
 
 def _get_client() -> genai.Client:
@@ -33,7 +33,7 @@ def _get_client() -> genai.Client:
             raise EnvironmentError(
                 "GOOGLE_API_KEY environment variable is required for Gemini API usage."
             )
-        CLIENT = genai.Client(api_key=GOOGLE_API_KEY)
+        CLIENT = genai.Client(api_key=GOOGLE_API_KEY)  # pyright: ignore[reportConstantRedefinition]
     return CLIENT
 
 
